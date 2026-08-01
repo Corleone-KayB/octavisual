@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <section class="hero">
+    <div class="slider">
+      <div class="slide active" style="background-image: url('/images/slide2.jpg');"></div>
+      <div class="slide" style="background-image: url('/images/slide1.jpg');"></div>
+      <div class="slide" style="background-image: url('/images/slide3.jpg');"></div>
+      <div class="slide" style="background-image: url('/images/slide4.jpg');"></div>
+      <div class="slide" style="background-image: url('/images/slide5.jpg');"></div>
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <%- include('partials/header') %>
+
+    <div class="slider-dots">
+      <span class="dot active" data-index="0"></span>
+      <span class="dot" data-index="1"></span>
+      <span class="dot" data-index="2"></span>
+      <span class="dot" data-index="3"></span>
+      <span class="dot" data-index="4"></span>
+    </div>
+  </section>
+  <section id="about" class="about-section">
+   <div class="about-heading">
+    <h1>About Us</h1>
+   </div>
+   <div class="about-grid">
+      <div class="about-media">
+        <img src="/images/about.jpeg" alt="Behind the scenes with Octavisual.">
+      </div>    
+    
+      <div class="about-copy">
+    <p>
+      Octavisual is a video and photography studio built around a simple idea: every
+      story deserves to be told with care. From quiet portraits to full-scale event
+      coverage, we approach each project as a chance to notice something worth keeping —
+      a gesture, a moment of light, a truth in someone's expression.
+    </p>
+    <p>
+      Our work spans commercial films, documentary shorts, and editorial photography,
+      but the process stays the same. We listen first, shoot with intention, and edit
+      with restraint, letting the subject lead rather than the technique.
+    </p>
+    <p>
+      Beyond the camera, we partner with organizations and causes doing meaningful work
+      in our communities, using film and photography to help those stories reach further
+      and land deeper.
+    </p>
+  </div>
+</section>
+
+  <section id="portfolio" class="portfolio-page">
+  <div class="portfolio-heading">
+    <h1>Our Work</h1>
+    <div class="filter-dropdown">
+      <button class="filter-toggle" id="filterToggle">All &#9662;</button>
+      <ul class="filter-menu" id="filterMenu">
+        <li data-filter="all">All</li>
+        <li data-filter="video">Videos</li>
+        <li data-filter="picture">Pictures</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <% items.forEach(function(item) { %>
+      <div class="gallery-item" data-type="<%= item.type %>">
+        <img src="<%= item.thumb %>" alt="<%= item.title %>">
+
+        <% if (item.type === 'video') { %>
+          <a class="overlay overlay-video" href="<%= item.youtube %>" target="_blank" rel="noopener">
+            <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="7,4 21,12 7,20"></polygon>
+            </svg>
+          </a>
+        <% } else { %>
+          <span class="overlay overlay-picture">
+            <svg class="icon-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="10" cy="10" r="7"></circle>
+              <line x1="21" y1="21" x2="15.5" y2="15.5"></line>
+            </svg>
+          </span>
+        <% } %>
+
+        <span class="caption"><%= item.title %></span>
+      </div>
+    <% }); %>
+  </div>
+</section>
+
+<section id="team" class="team-section">
+  <div class="about-heading">
+    <h1>Meet The Team</h1>
+  </div>
+
+  <div class="team-slider">
+    <div class="team-track">
+      <div class="team-card">
+        <img src="/images/team/member1.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Amara Diallo</h3>
+        <span class="team-role">Creative Director</span>
+        <p class="team-bio">Shapes the studio's visual voice, from first concept to final cut.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member2.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Jonas Muller</h3>
+        <span class="team-role">Lead Cinematographer</span>
+        <p class="team-bio">Finds the light in every scene, no matter the location.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member3.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Octavisual mwenyewe</h3>
+        <span class="team-role">Photographer</span>
+        <p class="team-bio">Turns quiet, unplanned moments into lasting images.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member4.jpg" alt=" Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Editor</span>
+        <p class="team-bio">Builds rhythm and pace out of hours of raw footage.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member5.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Octavisual mwenyewe</h3>
+        <span class="team-role">Producer</span>
+        <p class="team-bio">Keeps every production grounded, on time, and on budget.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member6.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Photographer</span>
+        <p class="team-bio">Specializes in portraits that feel candid, never posed.</p>
+      </div>
+
+      <!-- duplicate set — required so the marquee loops seamlessly at translateX(-50%) -->
+      <div class="team-card">
+        <img src="/images/team/member1.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Octavisual mwenyewe</h3>
+        <span class="team-role">Creative Director</span>
+        <p class="team-bio">Shapes the studio's visual voice, from first concept to final cut.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member2.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Lead Cinematographer</span>
+        <p class="team-bio">Finds the light in every scene, no matter the location.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member3.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Photographer</span>
+        <p class="team-bio">Turns quiet, unplanned moments into lasting images.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member4.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Editor</span>
+        <p class="team-bio">Builds rhythm and pace out of hours of raw footage.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member5.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Producer</span>
+        <p class="team-bio">Keeps every production grounded, on time, and on budget.</p>
+      </div>
+      <div class="team-card">
+        <img src="/images/team/member6.jpg" alt="Ifoto ntayo mwana">
+        <h3 class="team-name">Iniga ya Octavisual</h3>
+        <span class="team-role">Photographer</span>
+        <p class="team-bio">Specializes in portraits that feel candid, never posed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact-section">
+  <div class="about-heading">
+    <h1>Contact Us</h1>
+  </div>
+
+  <div class="contact-grid">
+    <form class="contact-form" action="/contact" method="POST">
+      <div class="form-row">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+      </div>
+      <input type="text" name="subject" placeholder="Subject" required>
+      <textarea name="message" rows="6" placeholder="Your Message" required></textarea>
+      <button type="submit" class="btn-submit">Send Message</button>
+
+      <% if (success) { %>
+        <p class="form-status form-status--success">Thank you — your message has been sent.</p>
+      <% } %>
+      <% if (error) { %>
+        <p class="form-status form-status--error">Something went wrong. Please try again.</p>
+      <% } %>
+    </form>
+
+    <div class="contact-info">
+      <div class="info-block">
+        <span class="info-label">Phone</span>
+        <a href="tel:+250700000000">+250 700 000 000</a>
+        <a href="tel:+250780000000">+250 780 000 000</a>
+      </div>
+
+      <div class="info-block">
+        <span class="info-label">Email</span>
+        <a href="mailto:hello@octavisual.com">hello@octavisual.com</a>
+      </div>
+
+      <div class="info-block">
+        <span class="info-label">Address</span>
+        <p>KG 7 Ave, Kigali, Rwanda</p>
+      </div>
+
+      <div class="info-block">
+        <span class="info-label">Follow</span>
+        <div class="social-links">
+          <a href="#" target="_blank" rel="noopener">Instagram</a>
+          <a href="#" target="_blank" rel="noopener">YouTube</a>
+          <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p>&copy; <span id="currentYear"></span> Octavisual. All rights reserved.</p>
+</footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let current = 0;
+    const total = slides.length;
+    const intervalMs = 5000;
+    let timer;
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = (index + total) % total;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+
+    function next() {
+      goTo(current + 1);
+    }
+
+    const header = document.querySelector('.site-header');
+    function handleScroll() {
+      if (window.scrollY > 40) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    function startAutoplay() {
+      timer = setInterval(next, intervalMs);
+    }
+
+    function resetAutoplay() {
+      clearInterval(timer);
+      startAutoplay();
+    }
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        goTo(parseInt(dot.dataset.index, 10));
+        resetAutoplay();
+      });
+    });
+
+    startAutoplay();
+    const filterToggle = document.getElementById('filterToggle');
+const filterMenu = document.getElementById('filterMenu');
+const grid = document.getElementById('galleryGrid');
+const galleryItems = Array.from(grid.querySelectorAll('.gallery-item'));
+
+filterToggle.addEventListener('click', () => {
+  filterMenu.classList.toggle('open');
+});
+
+filterMenu.addEventListener('click', (e) => {
+  const filter = e.target.dataset.filter;
+  if (!filter) return;
+  filterToggle.innerHTML = e.target.textContent + ' &#9662;';
+  filterMenu.classList.remove('open');
+  reshuffle(filter);
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.filter-dropdown')) {
+    filterMenu.classList.remove('open');
+  }
+});
+
+function reshuffle(filter) {
+  grid.classList.add('reshuffling');
+
+  setTimeout(() => {
+    galleryItems
+      .slice()
+      .sort((a, b) => {
+        const aMatch = (filter === 'all' || a.dataset.type === filter) ? 0 : 1;
+        const bMatch = (filter === 'all' || b.dataset.type === filter) ? 0 : 1;
+        return aMatch - bMatch;
+      })
+      .forEach(item => grid.appendChild(item));
+
+    grid.classList.remove('reshuffling');
+  }, 250);
+}
+document.getElementById('currentYear').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
