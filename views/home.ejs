@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
+  <div id="cursor"></div>
   <section class="hero">
     <div class="slider">
       <div class="slide active" style="background-image: url('/images/slide2.jpg');"></div>
@@ -234,10 +234,18 @@
   </div>
 </section>
 
+<div class="cursor-glow"></div>
 <footer class="site-footer">
   <p>&copy; <span id="currentYear"></span> Octavisual. All rights reserved.</p>
 </footer>
 
+
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+
+<script src="https://unpkg.com/split-type"></script>
   <script>
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
@@ -325,7 +333,8 @@ function reshuffle(filter) {
   }, 250);
 }
 document.getElementById('currentYear').textContent = new Date().getFullYear();
-  </script>
+</script>
 
+<script src="/js/animations.js"></script>
 </body>
 </html>
