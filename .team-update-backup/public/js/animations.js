@@ -12,7 +12,6 @@
       syncTouch: false,
       anchors: { offset: 0, duration: 1.05 }
     });
-  window.__octaLenis = lenis;
     window.octavisualLenis = lenis;
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(time => lenis.raf(time * 1000));
@@ -193,103 +192,15 @@
     })
   });
 
-  // ---------- Team kinetic scroll choreography ----------
-  const teamStage = document.getElementById('teamStage');
-  const teamShell = document.querySelector('.team-scroll-shell');
-  const teamCards = gsap.utils.toArray('[data-team-card]');
-
-  if (teamStage && teamShell && teamCards.length) {
-    const teamMM = gsap.matchMedia();
-
-    teamMM.add('(min-width: 901px) and (prefers-reduced-motion: no-preference)', () => {
-      const choreography = [
-        { fromX: -260, fromY: 240, fromRY: 82, fromR: -18, settleR: -8, outX: -180, outY: -260, outRY: -66 },
-        { fromX: -40, fromY: -230, fromRY: -86, fromR: 10, settleR: 5, outX: 70, outY: -300, outRY: 74 },
-        { fromX: 280, fromY: 110, fromRY: -82, fromR: 17, settleR: 8, outX: 240, outY: -170, outRY: 68 },
-        { fromX: -230, fromY: 250, fromRY: 76, fromR: 12, settleR: 6, outX: -260, outY: 200, outRY: -70 },
-        { fromX: 230, fromY: 260, fromRY: -78, fromR: -16, settleR: -6, outX: 290, outY: 170, outRY: 72 }
-      ];
-
-      const titleBig = teamStage.querySelector('.team-stage-title strong');
-      const titleStories = teamStage.querySelector('.team-stage-title em');
-      const footer = teamStage.querySelector('.team-stage-footer');
-
-      teamCards.forEach((card, index) => {
-        const p = choreography[index % choreography.length];
-        gsap.set(card, {
-          x: p.fromX,
-          y: p.fromY,
-          rotationY: p.fromRY,
-          rotation: p.fromR,
-          scale: .76,
-          opacity: 0,
-          transformOrigin: '50% 50%',
-          force3D: true
-        });
-      });
-
-      gsap.set(titleBig, { scale: .78, opacity: .24, force3D: true });
-      gsap.set(titleStories, { y: 24, opacity: .18, force3D: true });
-      gsap.set(footer, { opacity: .18 });
-
-      const hold = { value: 0 };
-      const tl = gsap.timeline({
-        defaults: { ease: 'none' },
-        scrollTrigger: {
-          trigger: teamShell,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: true,
-          invalidateOnRefresh: true
-        }
-      });
-
-      tl.to(titleBig, { scale: 1.04, opacity: .92, duration: .9 }, 0)
-        .to(titleStories, { y: 0, opacity: 1, duration: .72 }, .16)
-        .to(footer, { opacity: .75, duration: .42 }, .44);
-
-      teamCards.forEach((card, index) => {
-        const p = choreography[index % choreography.length];
-        tl.to(card, {
-          x: 0,
-          y: 0,
-          rotationY: 0,
-          rotation: p.settleR,
-          scale: 1,
-          opacity: 1,
-          duration: .82
-        }, .18 + index * .09);
-      });
-
-      tl.to(hold, { value: 1, duration: .88 }, 1.04);
-
-      teamCards.forEach((card, index) => {
-        const p = choreography[index % choreography.length];
-        tl.to(card, {
-          x: p.outX,
-          y: p.outY,
-          rotationY: p.outRY,
-          rotation: p.settleR * 1.4,
-          scale: .82,
-          opacity: .06,
-          duration: .78
-        }, 1.72 + index * .055);
-      });
-
-      tl.to(titleBig, { scale: .88, opacity: .18, duration: .62 }, 1.74)
-        .to(titleStories, { y: -18, opacity: .12, duration: .62 }, 1.78)
-        .to(footer, { opacity: .1, duration: .38 }, 1.80);
-
-      return () => {
-        tl.scrollTrigger?.kill();
-        tl.kill();
-        gsap.set(teamCards, { clearProps: 'transform,opacity' });
-        gsap.set([titleBig, titleStories, footer], { clearProps: 'transform,opacity' });
-      };
-    });
-  }
-
-
+  // ---------- Team cards ----------
+  gsap.from('.team-card', {
+    y: 28,
+    opacity: 0,
+    stagger: .08,
+    duration: .85,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.team-viewport', start: 'top 84%', once: true }
+  });
 
   // ---------- Contact ----------
   gsap.from('.contact-hero .statement, .contact-mail', {

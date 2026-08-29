@@ -171,88 +171,39 @@
         </div>
       </section>
 
-      <section id="team" class="workspace-panel team-panel team-kinetic" data-nav-section="team">
+      <section id="team" class="workspace-panel team-panel" data-nav-section="team">
         <div class="panel-header">
           <span class="panel-number">04</span>
           <span class="panel-title">People</span>
-          <span class="panel-meta">Small team · big stories</span>
+          <span class="panel-meta">Small team · focused craft</span>
         </div>
 
-        <div class="team-scroll-shell">
-          <div class="team-stage" id="teamStage">
-            <div class="team-stage-copy" aria-hidden="true">
-              <span class="team-stage-kicker">Small team,</span>
-              <div class="team-stage-title">
-                <strong>big</strong>
-                <em>stories.</em>
-              </div>
-            </div>
+        <div class="team-heading-row">
+          <p class="statement team-statement">Different disciplines.<br><em>One visual language.</em></p>
+          <div class="team-controls" aria-label="Team carousel controls">
+            <button id="teamPrev" class="carousel-button magnetic" type="button" aria-label="Previous team member">←</button>
+            <button id="teamNext" class="carousel-button magnetic" type="button" aria-label="Next team member">→</button>
+          </div>
+        </div>
 
-            <div class="team-card-cloud" aria-label="Meet the Octavisual team">
-              <% team.forEach(function(member, index) { %>
-                <article class="team-float-card" data-team-card data-member-index="<%= index %>">
-                  <button
-                    class="team-card-hit"
-                    type="button"
-                    aria-label="Open <%= member.name %> profile"
-                    data-cursor-text="VIEW PROFILE"
-                  >
-                    <span class="team-portrait-frame">
-                      <img src="<%= member.image %>" alt="<%= member.name %>" loading="lazy" decoding="async">
-                      <span class="team-index"><%= String(index + 1).padStart(2, '0') %></span>
-                      <span class="team-card-open">Profile ↗</span>
-                    </span>
-
-                    <span class="team-card-caption">
-                      <strong><%= member.name %></strong>
-                      <small><%= member.role %></small>
-                    </span>
-                  </button>
-
-                  <div class="team-member-data" hidden>
-                    <span data-team-name><%= member.name %></span>
-                    <span data-team-role><%= member.role %></span>
-                    <p data-team-bio><%= member.bio %></p>
-                    <% if (member.cv) { %><a data-team-link data-label="View CV" href="<%= member.cv %>">CV</a><% } %>
-                    <% if (member.instagram) { %><a data-team-link data-label="Instagram" href="<%= member.instagram %>">Instagram</a><% } %>
-                    <% if (member.linkedin) { %><a data-team-link data-label="LinkedIn" href="<%= member.linkedin %>">LinkedIn</a><% } %>
-                    <% if (member.vimeo) { %><a data-team-link data-label="Vimeo" href="<%= member.vimeo %>">Vimeo</a><% } %>
-                    <% if (member.website) { %><a data-team-link data-label="Website" href="<%= member.website %>">Website</a><% } %>
-                  </div>
-                </article>
-              <% }); %>
-            </div>
-
-            <div class="team-stage-footer">
-              <span>Click a portrait to meet the person</span>
-              <span>Scroll to compose · scroll back to rewind</span>
-            </div>
+        <div class="team-viewport" id="teamViewport">
+          <div class="team-track">
+            <% team.forEach(function(member, index) { %>
+              <article class="team-card">
+                <div class="team-photo" data-cursor-text="HELLO">
+                  <img src="<%= member.image %>" alt="<%= member.name %>" loading="lazy">
+                  <span class="team-index"><%= String(index + 1).padStart(2, '0') %></span>
+                </div>
+                <div class="team-card-copy">
+                  <h3><%= member.name %></h3>
+                  <span><%= member.role %></span>
+                  <p><%= member.bio %></p>
+                </div>
+              </article>
+            <% }); %>
           </div>
         </div>
       </section>
-
-      <div class="team-profile" id="teamProfile" aria-hidden="true">
-        <button class="team-profile-backdrop" type="button" aria-label="Close team profile"></button>
-
-        <section class="team-profile-panel" role="dialog" aria-modal="true" aria-labelledby="teamProfileName">
-          <button class="team-profile-close" id="teamProfileClose" type="button" aria-label="Close team profile">×</button>
-
-          <div class="team-profile-media">
-            <img id="teamProfileImage" src="" alt="">
-            <span class="team-profile-mark">OCTAVISUAL / PEOPLE</span>
-          </div>
-
-          <div class="team-profile-copy">
-            <span class="team-profile-eyebrow">Meet the team</span>
-            <h2 id="teamProfileName"></h2>
-            <p class="team-profile-role" id="teamProfileRole"></p>
-            <p class="team-profile-bio" id="teamProfileBio"></p>
-
-            <div class="team-profile-links" id="teamProfileLinks"></div>
-            <p class="team-profile-empty" id="teamProfileEmpty">CV & social links coming soon.</p>
-          </div>
-        </section>
-      </div>
 
       <section id="contact" class="workspace-panel contact-panel" data-nav-section="contact">
         <div class="panel-header">

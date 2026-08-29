@@ -39,66 +39,12 @@ const portfolioItems = [
 ];
 
 const teamMembers = [
-  {
-    slug: 'fiette',
-    image: '/images/team/fiette.webp',
-    name: 'Fiette',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'serge',
-    image: '/images/team/serge.webp',
-    name: 'Serge',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'octave',
-    image: '/images/team/octave-placeholder.svg',
-    name: 'Octave',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'innocent',
-    image: '/images/team/innocent.webp',
-    name: 'Innocent',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'ice',
-    image: '/images/team/ice.webp',
-    name: 'Ice',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '/cv/cedric-cv.pdf',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  }
+  { image: '/images/team/member1.jpg', name: 'Amara Diallo', role: 'Creative Director', bio: "Shapes the studio's visual voice, from first concept to final cut." },
+  { image: '/images/team/member2.jpg', name: 'Jonas Muller', role: 'Lead Cinematographer', bio: 'Finds the light in every scene, no matter the location.' },
+  { image: '/images/team/member3.jpg', name: 'Octavisual', role: 'Photographer', bio: 'Turns quiet, unplanned moments into lasting images.' },
+  { image: '/images/team/member4.jpg', name: 'Studio Editor', role: 'Editor', bio: 'Builds rhythm and pace out of hours of raw footage.' },
+  { image: '/images/team/member5.jpg', name: 'Production Lead', role: 'Producer', bio: 'Keeps every production grounded, on time, and on budget.' },
+  { image: '/images/team/member6.jpg', name: 'Portrait Unit', role: 'Photographer', bio: 'Specializes in portraits that feel candid, never posed.' }
 ];
 
 app.get('/', (req, res) => {

@@ -381,147 +381,49 @@
   requestAnimationFrame(() => positionFilterIndicator(initialFilter));
   window.addEventListener('resize', () => positionFilterIndicator(document.querySelector('.filter-tab.is-active')));
 
-  // ---------- Team profile expansion ----------
-  const teamProfile = document.getElementById('teamProfile');
-  const teamProfilePanel = teamProfile?.querySelector('.team-profile-panel');
-  const teamProfileBackdrop = teamProfile?.querySelector('.team-profile-backdrop');
-  const teamProfileClose = document.getElementById('teamProfileClose');
-  const teamProfileImage = document.getElementById('teamProfileImage');
-  const teamProfileName = document.getElementById('teamProfileName');
-  const teamProfileRole = document.getElementById('teamProfileRole');
-  const teamProfileBio = document.getElementById('teamProfileBio');
-  const teamProfileLinks = document.getElementById('teamProfileLinks');
-  const teamProfileEmpty = document.getElementById('teamProfileEmpty');
-  let activeTeamCard = null;
+  // ---------- Team controlled carousel + quiet autoplay ----------
+  const teamViewport = document.getElementById('teamViewport');
+  const teamPrev = document.getElementById('teamPrev');
+  const teamNext = document.getElementById('teamNext');
+  let teamTimer = null;
 
-  function teamField(card, selector) {
-    return card?.querySelector(selector)?.textContent?.trim() || '';
+  function teamStep() {
+    if (!teamViewport) return 0;
+    const card = teamViewport.querySelector('.team-card');
+    const track = teamViewport.querySelector('.team-track');
+    if (!card || !track) return 0;
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    return card.getBoundingClientRect().width + gap;
   }
 
-  function populateTeamProfile(card) {
-    if (!card) return;
-    const data = card.querySelector('.team-member-data');
-    const image = card.querySelector('.team-portrait-frame img');
-    const name = teamField(data, '[data-team-name]');
-    const role = teamField(data, '[data-team-role]');
-    const bio = teamField(data, '[data-team-bio]');
-
-    if (teamProfileImage && image) {
-      teamProfileImage.src = image.currentSrc || image.src;
-      teamProfileImage.alt = name || image.alt || 'Octavisual team member';
-    }
-    if (teamProfileName) teamProfileName.textContent = name;
-    if (teamProfileRole) teamProfileRole.textContent = role;
-    if (teamProfileBio) teamProfileBio.textContent = bio;
-
-    if (teamProfileLinks) {
-      teamProfileLinks.replaceChildren();
-      data?.querySelectorAll('[data-team-link]').forEach(source => {
-        const link = document.createElement('a');
-        link.href = source.href;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = `${source.dataset.label || source.textContent.trim()} ↗`;
-        teamProfileLinks.appendChild(link);
-      });
-      if (teamProfileEmpty) teamProfileEmpty.hidden = teamProfileLinks.children.length > 0;
-    }
-  }
-
-  function openTeamProfile(card) {
-    if (!teamProfile || !teamProfilePanel || !card || teamProfile.classList.contains('is-open')) return;
-    activeTeamCard = card;
-    populateTeamProfile(card);
-
-    const sourceRect = card.getBoundingClientRect();
-    teamProfile.classList.add('is-open');
-    teamProfile.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('team-profile-open');
-    window.__octaLenis?.stop?.();
-
-    requestAnimationFrame(() => {
-      const panelRect = teamProfilePanel.getBoundingClientRect();
-      const dx = sourceRect.left + sourceRect.width / 2 - (panelRect.left + panelRect.width / 2);
-      const dy = sourceRect.top + sourceRect.height / 2 - (panelRect.top + panelRect.height / 2);
-      const scale = Math.max(.28, Math.min(.62, sourceRect.width / panelRect.width));
-
-      if (window.gsap && !reducedMotion) {
-        gsap.set(teamProfileBackdrop, { opacity: 0 });
-        gsap.fromTo(teamProfilePanel,
-          { x: dx, y: dy, scale, rotation: -2, opacity: .2 },
-          { x: 0, y: 0, scale: 1, rotation: 0, opacity: 1, duration: .72, ease: 'power4.out', clearProps: 'transform' }
-        );
-        gsap.to(teamProfileBackdrop, { opacity: 1, duration: .45, ease: 'power2.out' });
-        gsap.fromTo(teamProfilePanel.querySelectorAll('.team-profile-copy > *'),
-          { y: 18, opacity: 0 },
-          { y: 0, opacity: 1, duration: .48, stagger: .045, delay: .18, ease: 'power3.out' }
-        );
-      } else {
-        teamProfilePanel.style.opacity = '1';
-        if (teamProfileBackdrop) teamProfileBackdrop.style.opacity = '1';
-      }
-
-      teamProfileClose?.focus({ preventScroll: true });
-    });
-  }
-
-  function closeTeamProfile() {
-    if (!teamProfile?.classList.contains('is-open')) return;
-
-    const finish = () => {
-      teamProfile.classList.remove('is-open');
-      teamProfile.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('team-profile-open');
-      teamProfilePanel?.removeAttribute('style');
-      teamProfileBackdrop?.removeAttribute('style');
-      window.__octaLenis?.start?.();
-      activeTeamCard?.querySelector('.team-card-hit')?.focus({ preventScroll: true });
-      activeTeamCard = null;
-    };
-
-    if (window.gsap && !reducedMotion && activeTeamCard && teamProfilePanel) {
-      const targetRect = activeTeamCard.getBoundingClientRect();
-      const panelRect = teamProfilePanel.getBoundingClientRect();
-      const dx = targetRect.left + targetRect.width / 2 - (panelRect.left + panelRect.width / 2);
-      const dy = targetRect.top + targetRect.height / 2 - (panelRect.top + panelRect.height / 2);
-      const scale = Math.max(.28, Math.min(.62, targetRect.width / panelRect.width));
-      gsap.to(teamProfileBackdrop, { opacity: 0, duration: .28, ease: 'power2.in' });
-      gsap.to(teamProfilePanel, { x: dx, y: dy, scale, opacity: 0, duration: .48, ease: 'power3.in', onComplete: finish });
+  function scrollTeam(direction) {
+    if (!teamViewport) return;
+    const step = teamStep();
+    const max = teamViewport.scrollWidth - teamViewport.clientWidth;
+    if (direction > 0 && teamViewport.scrollLeft >= max - step * .35) {
+      teamViewport.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (direction < 0 && teamViewport.scrollLeft <= step * .35) {
+      teamViewport.scrollTo({ left: max, behavior: 'smooth' });
     } else {
-      finish();
+      teamViewport.scrollBy({ left: direction * step, behavior: 'smooth' });
     }
   }
 
-  document.querySelectorAll('[data-team-card]').forEach(card => {
-    card.querySelector('.team-card-hit')?.addEventListener('click', () => openTeamProfile(card));
-  });
-
-  teamProfileClose?.addEventListener('click', closeTeamProfile);
-  teamProfileBackdrop?.addEventListener('click', closeTeamProfile);
-
-  document.addEventListener('keydown', event => {
-    if (!teamProfile?.classList.contains('is-open')) return;
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeTeamProfile();
-      return;
+  function startTeamAutoplay() {
+    clearInterval(teamTimer);
+    if (window.innerWidth > 760 && !reducedMotion) {
+      teamTimer = setInterval(() => scrollTeam(1), 4800);
     }
-    if (event.key === 'Tab' && teamProfilePanel) {
-      const focusable = [...teamProfilePanel.querySelectorAll('button:not([disabled]), a[href]')];
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-  });
+  }
 
-
+  teamPrev?.addEventListener('click', () => { scrollTeam(-1); startTeamAutoplay(); });
+  teamNext?.addEventListener('click', () => { scrollTeam(1); startTeamAutoplay(); });
+  teamViewport?.addEventListener('mouseenter', () => clearInterval(teamTimer));
+  teamViewport?.addEventListener('mouseleave', startTeamAutoplay);
+  teamViewport?.addEventListener('focusin', () => clearInterval(teamTimer));
+  teamViewport?.addEventListener('focusout', startTeamAutoplay);
+  window.addEventListener('resize', startTeamAutoplay);
+  startTeamAutoplay();
 
   // ---------- Photography lightbox ----------
   const lightbox = document.getElementById('lightbox');
