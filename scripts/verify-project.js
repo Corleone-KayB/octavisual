@@ -64,7 +64,7 @@ pass('3D page-stack and responsive CSS is present.');
 for (const token of ['ABOUT CINEMATIC SCROLL CHAPTER', '.about-scroll-stage', '.about-cinematic-frame', '.about-emotional', 'position: sticky']) {
   if (!css.includes(token)) fail(`Cinematic About CSS missing ${token}`);
 }
-for (const token of ['About cinematic scroll chapter', 'scrub: 1.05', 'compactScaleX', 'about-cinematic-copy']) {
+for (const token of ['About cinematic scroll chapter', 'scrub: true', 'compactScaleX', 'about-cinematic-copy']) {
   if (!animations.includes(token)) fail(`Cinematic About animation missing ${token}`);
 }
 pass('Reversible scrubbed About animation is present.');
