@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080a0d">
+  <meta name="description" content="Octavisual is a Kigali-based photography and film studio creating considered visual stories.">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
+
+  <%- include('partials/header') %>
+
+  <div class="app-shell">
+    <main class="workspace">
+      <section id="home" class="workspace-panel hero-panel" data-nav-section="home">
+        <div class="hero-slider" id="heroBook" aria-label="Featured Octavisual work" aria-roledescription="carousel">
+          <% [
+            { src: '/images/optimized/slide1.webp', alt: 'Misty green hills rising above the clouds in Rwanda' },
+            { src: '/images/optimized/slide2.webp', alt: 'Corporate team gathering photographed outdoors in Rwanda' },
+            { src: '/images/optimized/slide3.webp', alt: 'Team portrait at an outdoor event in Kigali' },
+            { src: '/images/optimized/slide4.webp', alt: 'Farmer working in a green potato field in Rwanda' },
+            { src: '/images/optimized/slide5.webp', alt: 'Farmer holding freshly harvested potatoes in Rwanda' }
+          ].forEach(function(slide, index) { %>
+            <figure
+              class="hero-slide <%= index === 0 ? 'is-active' : '' %>"
+              data-slide="<%= index %>"
+              aria-hidden="<%= index === 0 ? 'false' : 'true' %>"
+            >
+              <img src="<%= slide.src %>" alt="<%= slide.alt %>" <%= index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %>>
+              <span class="hero-page-edge" aria-hidden="true"></span>
+            </figure>
+          <% }); %>
+        </div>
+        <div class="hero-shade" aria-hidden="true"></div>
+
+        <div class="panel-topline hero-topline">
+          <div class="panel-kicker"><span class="status-dot"></span> Kigali / Rwanda</div>
+          <div class="panel-kicker">OctaVisual · 2026</div>
+        </div>
+
+        <div class="hero-copy">
+          <span class="eyebrow">Film · Photography · Direction</span>
+          <h1>Stories that<br><em>stay with you.</em></h1>
+          <p>We turn people, places and ideas into cinematic images with clarity, restraint and feeling.</p>
+        </div>
+
+        <div class="hero-page-cue" aria-hidden="true">
+          <span class="hero-page-cue-line"></span>
+          <span>Turn the page</span>
+        </div>
+
+        <div class="hero-bottom">
+          <a href="#portfolio" class="round-cta magnetic" data-cursor-text="EXPLORE">
+            <span>Explore work</span>
+            <span aria-hidden="true">↘</span>
+          </a>
+
+          <div class="hero-pagination" aria-label="Hero page controls">
+            <span class="hero-counter"><strong id="heroCurrent">01</strong> / 05</span>
+
+            <div class="hero-book-controls" aria-label="Turn hero pages">
+              <button id="heroPrev" class="hero-page-button" type="button" aria-label="Previous hero page">←</button>
+              <button id="heroNext" class="hero-page-button" type="button" aria-label="Next hero page">→</button>
+            </div>
+
+            <div class="hero-dots">
+              <% for(let i = 0; i < 5; i++) { %>
+                <button class="hero-dot <%= i === 0 ? 'is-active' : '' %>" data-index="<%= i %>" aria-label="Show hero page <%= i + 1 %>" aria-current="<%= i === 0 ? 'true' : 'false' %>"><span></span></button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <p class="sr-only" id="heroSlideStatus" aria-live="polite">Hero page 1 of 5</p>
+      </section>
+
+      <section id="about" class="workspace-panel about-panel" data-nav-section="about" aria-labelledby="aboutTitle">
+        <div class="about-scroll-stage">
+          <div class="about-cinematic-frame">
+            <img
+              class="about-cinematic-image"
+              src="/images/about-cinematic.jpg"
+              alt="People weighing a harvested sack in a field in Rwanda"
+              loading="lazy"
+            >
+
+            <div class="about-cinematic-overlay" aria-hidden="true"></div>
+            <div class="about-cinematic-vignette" aria-hidden="true"></div>
+
+            <div class="panel-header about-panel-header">
+              <span class="panel-number">02</span>
+              <span class="panel-title">About the studio</span>
+              <span class="panel-meta">Since 2017 · Kigali, RW</span>
+            </div>
+
+            <div class="about-cinematic-copy">
+              <p id="aboutTitle" class="about-cinematic-statement">
+                <span class="about-intro">
+                  Since 2017, in Kigali — film, photography, direction.<br>
+                  Quiet portraits. Full productions. NGOs, brands, places worth remembering.
+                </span>
+
+                <br class="about-copy-break">
+
+                <span class="about-emotional">
+                  Every story we shoot, we shoot like it's the only one that matters.<br>
+                  Because to whoever's in it, it is.
+                </span>
+              </p>
+            </div>
+
+            <div class="about-cinematic-footnote" aria-hidden="true">
+              <span>Octavisual / Kigali</span>
+              <span>Scroll to unfold · scroll back to rewind</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="portfolio" class="workspace-panel work-panel" data-nav-section="portfolio">
+        <div class="panel-header panel-header--work">
+          <span class="panel-number">03</span>
+          <span class="panel-title">Selected work</span>
+          <span class="panel-meta"><%= items.length %> projects</span>
+        </div>
+
+        <div class="work-toolbar">
+          <p class="work-intro">A selection of commercial, documentary and editorial work.</p>
+          <div class="filter-tabs" role="group" aria-label="Filter portfolio">
+            <button class="filter-tab is-active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="video">Film</button>
+            <button class="filter-tab" data-filter="picture">Photography</button>
+            <span class="filter-indicator" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid">
+          <% items.forEach(function(item, index) { %>
+            <article class="project-card project-card--<%= (index % 5) + 1 %>" data-type="<%= item.type %>">
+              <div class="project-media" data-cursor-text="<%= item.type === 'video' ? (item.youtube ? 'PLAY' : 'SOON') : 'VIEW' %>">
+                <img src="<%= item.thumb %>" alt="<%= item.title %>" loading="lazy">
+                <div class="project-shade"></div>
+                <% if (item.type === 'video' && item.youtube) { %>
+                  <a class="project-hit" href="<%= item.youtube %>" target="_blank" rel="noopener" aria-label="Watch <%= item.title %>"></a>
+                <% } else if (item.type === 'picture') { %>
+                  <button class="project-hit lightbox-trigger" type="button" data-image="<%= item.thumb %>" data-title="<%= item.title %>" aria-label="View <%= item.title %>"></button>
+                <% } else { %>
+                  <button class="project-hit project-hit--disabled" type="button" aria-label="Video preview coming soon"></button>
+                <% } %>
+                <span class="project-index"><%= String(index + 1).padStart(2, '0') %></span>
+                <span class="project-icon"><%= item.type === 'video' ? '▶' : '↗' %></span>
+              </div>
+              <div class="project-info">
+                <h3><%= item.title %></h3>
+                <p><%= item.category %> · <%= item.year %></p>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      </section>
+
+      <section id="team" class="workspace-panel team-panel" data-nav-section="team">
+        <div class="panel-header">
+          <span class="panel-number">04</span>
+          <span class="panel-title">People</span>
+          <span class="panel-meta">Small team · focused craft</span>
+        </div>
+
+        <div class="team-heading-row">
+          <p class="statement team-statement">Different disciplines.<br><em>One visual language.</em></p>
+          <div class="team-controls" aria-label="Team carousel controls">
+            <button id="teamPrev" class="carousel-button magnetic" type="button" aria-label="Previous team member">←</button>
+            <button id="teamNext" class="carousel-button magnetic" type="button" aria-label="Next team member">→</button>
+          </div>
+        </div>
+
+        <div class="team-viewport" id="teamViewport">
+          <div class="team-track">
+            <% team.forEach(function(member, index) { %>
+              <article class="team-card">
+                <div class="team-photo" data-cursor-text="HELLO">
+                  <img src="<%= member.image %>" alt="<%= member.name %>" loading="lazy">
+                  <span class="team-index"><%= String(index + 1).padStart(2, '0') %></span>
+                </div>
+                <div class="team-card-copy">
+                  <h3><%= member.name %></h3>
+                  <span><%= member.role %></span>
+                  <p><%= member.bio %></p>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="workspace-panel contact-panel" data-nav-section="contact">
+        <div class="panel-header">
+          <span class="panel-number">05</span>
+          <span class="panel-title">Contact</span>
+          <span class="panel-meta"><span class="status-dot"></span> Available for select projects</span>
+        </div>
+
+        <div class="contact-hero">
+          <p class="statement">Let's make something<br><em>worth remembering.</em></p>
+          <a class="contact-mail magnetic" href="mailto:hello@octavisual.com">hello@octavisual.com ↗</a>
+        </div>
+
+        <div class="contact-layout">
+          <form class="contact-form" action="/contact" method="POST">
+            <div class="field-row">
+              <label class="field"><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Your name" required></label>
+              <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" required></label>
+            </div>
+            <label class="field"><span>Project</span><input type="text" name="subject" placeholder="What are we making?" required></label>
+            <label class="field"><span>Message</span><textarea name="message" rows="5" placeholder="Tell us about the idea, timing and scope." required></textarea></label>
+            <button type="submit" class="submit-button magnetic"><span>Send enquiry</span><span>↗</span></button>
+
+            <% if (success) { %><p class="form-status form-status--success">Thank you — your message has been sent.</p><% } %>
+            <% if (error) { %><p class="form-status form-status--error">Something went wrong. Please try again.</p><% } %>
+          </form>
+
+          <aside class="contact-aside">
+            <div class="contact-detail"><span>Based in</span><p>Kigali, Rwanda<br>Available worldwide</p></div>
+            <div class="contact-detail"><span>Phone</span><a href="tel:+250700000000">+250 700 000 000</a><a href="tel:+250780000000">+250 780 000 000</a></div>
+            <div class="contact-detail"><span>Social</span><a href="#">Instagram ↗</a><a href="#">YouTube ↗</a><a href="#">LinkedIn ↗</a></div>
+          </aside>
+        </div>
+      </section>
+
+      <%- include('partials/footer') %>
+    </main>
+  </div>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
+    <button class="lightbox-close" type="button" aria-label="Close preview">×</button>
+    <figure><img id="lightboxImage" alt=""><figcaption id="lightboxCaption"></figcaption></figure>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js"></script>
+  <script src="/js/app-ui.js"></script>
+  <script src="/js/animations.js"></script>
+</body>
+</html>
