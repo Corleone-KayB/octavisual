@@ -54,9 +54,10 @@ router.get('/', wrap(async (req, res) => {
 }));
 
 router.post('/reorder', reorderHandler(WorkItem, () => ({ mediaType: 'photography' })));
-router.post('/:id/toggle/:field', toggleHandler(WorkItem, ['published', 'featured'], '/admin/photography'));
+router.post('/:id/toggle/:field', toggleHandler(WorkItem, ['published', 'featured'], '/admin/photography', { mediaType: 'photography' }));
 router.post('/:id/delete', deleteHandler(WorkItem, '/admin/photography', {
   label: 'Photo',
+  scope: { mediaType: 'photography' },
   beforeDelete: item => media.destroy(item.imagePublicId)
 }));
 

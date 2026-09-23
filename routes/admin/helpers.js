@@ -25,11 +25,11 @@ function reorderHandler(Model, scope = () => ({})) {
 }
 
 // POST /:id/toggle/:field  -> flips a boolean field from an allowlist.
-function toggleHandler(Model, allowedFields, redirectTo) {
+function toggleHandler(Model, allowedFields, redirectTo, scope = {}) {
   return wrap(async (req, res) => {
     const { id, field } = req.params;
     if (!isId(id) || !allowedFields.includes(field)) return res.status(400).send('Bad request');
-    const doc = await Model.findById(id);
+    const doc = await Model.findOne({ _id: id, ...scope });
     if (!doc) return res.status(404).send('Not found');
     doc.set(field, !doc.get(field));
     await doc.save();
@@ -39,10 +39,10 @@ function toggleHandler(Model, allowedFields, redirectTo) {
   });
 }
 
-function deleteHandler(Model, redirectTo, { label = 'Item', beforeDelete } = {}) {
+function deleteHandler(Model, redirectTo, { label = 'Item', beforeDelete, scope = {} } = {}) {
   return wrap(async (req, res) => {
     if (!isId(req.params.id)) return res.status(400).send('Bad request');
-    const doc = await Model.findById(req.params.id);
+    const doc = await Model.findOne({ _id: req.params.id, ...scope });
     if (!doc) return res.status(404).send('Not found');
     if (beforeDelete) await beforeDelete(doc);
     await doc.deleteOne();

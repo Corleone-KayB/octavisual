@@ -101,9 +101,10 @@ router.get('/', wrap(async (req, res) => {
 }));
 
 router.post('/reorder', reorderHandler(WorkItem, () => ({ mediaType: 'film' })));
-router.post('/:id/toggle/:field', toggleHandler(WorkItem, ['published', 'featured'], '/admin/film'));
+router.post('/:id/toggle/:field', toggleHandler(WorkItem, ['published', 'featured'], '/admin/film', { mediaType: 'film' }));
 router.post('/:id/delete', deleteHandler(WorkItem, '/admin/film', {
   label: 'Film',
+  scope: { mediaType: 'film' },
   beforeDelete: item => media.destroy(item.customThumbnailPublicId)
 }));
 

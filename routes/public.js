@@ -1,8 +1,18 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const rateLimit = require('express-rate-limit');
 const { loadHomeContent } = require('../lib/content');
 
 const router = express.Router();
+
+// Keeps the form from being used to relay spam through the SMTP account.
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  handler: (req, res) => res.redirect('/?error=true#contact')
+});
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -39,7 +49,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.post('/contact', async (req, res) => {
+router.post('/contact', contactLimiter, async (req, res) => {
   const name = singleLine(req.body.name, 120);
   const email = singleLine(req.body.email, 200);
   const subject = singleLine(req.body.subject, 200);
