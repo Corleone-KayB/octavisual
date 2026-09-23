@@ -1,0 +1,46 @@
+<% const f = section.fields; const socials = settings.socials || {}; %>
+<section id="<%= section.anchor %>" class="workspace-panel contact-panel" data-nav-section="<%= section.anchor %>">
+  <div class="panel-header">
+    <span class="panel-number"><%= section.number %></span>
+    <span class="panel-title"><%= section.title %></span>
+    <span class="panel-meta"><span class="status-dot"></span> <%= f.meta %></span>
+  </div>
+
+  <div class="contact-hero">
+    <p class="statement"><%= f.statement %><br><em><%= f.statementEmphasis %></em></p>
+    <% if (settings.contactEmail) { %>
+      <a class="contact-mail magnetic" href="mailto:<%= settings.contactEmail %>"><%= settings.contactEmail %> ↗</a>
+    <% } %>
+  </div>
+
+  <div class="contact-layout">
+    <form class="contact-form" action="/contact" method="POST">
+      <div class="field-row">
+        <label class="field"><span>Name</span><input type="text" name="name" autocomplete="name" placeholder="Your name" maxlength="120" required></label>
+        <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" placeholder="you@example.com" maxlength="200" required></label>
+      </div>
+      <label class="field"><span>Project</span><input type="text" name="subject" placeholder="What are we making?" maxlength="200" required></label>
+      <label class="field"><span>Message</span><textarea name="message" rows="5" placeholder="Tell us about the idea, timing and scope." maxlength="5000" required></textarea></label>
+      <button type="submit" class="submit-button magnetic"><span>Send enquiry</span><span>↗</span></button>
+
+      <% if (success) { %><p class="form-status form-status--success">Thank you — your message has been sent.</p><% } %>
+      <% if (error) { %><p class="form-status form-status--error">Something went wrong. Please try again.</p><% } %>
+    </form>
+
+    <aside class="contact-aside">
+      <% if ((settings.locationLines || []).length) { %>
+        <div class="contact-detail"><span>Based in</span><p><% settings.locationLines.forEach(function(line, index) { %><%= line %><% if (index < settings.locationLines.length - 1) { %><br><% } %><% }); %></p></div>
+      <% } %>
+      <% if ((settings.phones || []).length) { %>
+        <div class="contact-detail"><span>Phone</span><% settings.phones.forEach(function(phone) { %><a href="tel:<%= phone.number.replace(/[^+\d]/g, '') %>"><% if (phone.label) { %><%= phone.label %>: <% } %><%= phone.number %></a><% }); %></div>
+      <% } %>
+      <% if (safeUrl(socials.instagram) || safeUrl(socials.youtube) || safeUrl(socials.linkedin)) { %>
+        <div class="contact-detail"><span>Social</span>
+          <% if (safeUrl(socials.instagram)) { %><a href="<%= safeUrl(socials.instagram) %>" target="_blank" rel="noopener">Instagram ↗</a><% } %>
+          <% if (safeUrl(socials.youtube)) { %><a href="<%= safeUrl(socials.youtube) %>" target="_blank" rel="noopener">YouTube ↗</a><% } %>
+          <% if (safeUrl(socials.linkedin)) { %><a href="<%= safeUrl(socials.linkedin) %>" target="_blank" rel="noopener">LinkedIn ↗</a><% } %>
+        </div>
+      <% } %>
+    </aside>
+  </div>
+</section>

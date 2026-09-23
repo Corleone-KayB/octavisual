@@ -1,0 +1,48 @@
+<% const f = section.fields; const intro = f.introLines || []; const emotional = f.emotionalLines || []; %>
+<section id="<%= section.anchor %>" class="workspace-panel about-panel" data-nav-section="<%= section.anchor %>" aria-labelledby="aboutTitle">
+  <div class="about-scroll-stage">
+    <div class="about-cinematic-frame">
+      <% if (f.imageUrl) { %>
+        <img
+          class="about-cinematic-image"
+          src="<%= section.image.src %>"
+          <% if (section.image.srcset) { %>srcset="<%= section.image.srcset %>" sizes="100vw"<% } %>
+          alt="<%= f.imageAlt %>"
+          loading="eager"
+          decoding="async"
+        >
+      <% } %>
+
+      <div class="about-cinematic-overlay" aria-hidden="true"></div>
+      <div class="about-cinematic-vignette" aria-hidden="true"></div>
+
+      <div class="panel-header about-panel-header">
+        <span class="panel-number"><%= section.number %></span>
+        <span class="panel-title"><%= section.title %></span>
+        <span class="panel-meta"><%= f.meta %></span>
+      </div>
+
+      <div class="about-cinematic-copy">
+        <p id="aboutTitle" class="about-cinematic-statement">
+          <span class="about-intro">
+            <% intro.forEach(function(line, index) { %><%= line %><% if (index < intro.length - 1) { %><br><% } %>
+            <% }); %>
+          </span>
+
+          <br class="about-copy-break">
+
+          <span class="about-emotional">
+            <% emotional.forEach(function(line) { %>
+              <span class="about-emotional-line"><%= line %></span>
+            <% }); %>
+          </span>
+        </p>
+      </div>
+
+      <div class="about-cinematic-footnote" aria-hidden="true">
+        <span><%= f.footnoteLeft %></span>
+        <span><%= f.footnoteRight %></span>
+      </div>
+    </div>
+  </div>
+</section>

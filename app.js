@@ -2,134 +2,39 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
-const nodemailer = require('nodemailer');
+const { connectDB } = require('./lib/db');
+const { safeUrl } = require('./lib/view-helpers');
+const publicRoutes = require('./routes/public');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.locals.safeUrl = safeUrl;
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '200kb' }));
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: Number(process.env.SMTP_PORT) === 465,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
+app.use('/', publicRoutes);
+
+app.use((req, res) => {
+  res.status(404).type('text').send('Not found');
 });
 
-const portfolioItems = [
-  { type: 'video', thumb: '/images/portfolio/video1.jpg', youtube: 'https://www.youtube.com/watch?v=1q-AeSbV-nE', title: '10 Years of Maj Andersen', category: 'Film', year: '2026' },
-  { type: 'picture', thumb: '/images/portfolio/photo1.jpg', title: 'Golf Balls', category: 'Photography', year: '2026' },
-  { type: 'video', thumb: '/images/portfolio/video2.jpg', youtube: null, title: 'Container Wall', category: 'Film', year: '2026' },
-  { type: 'picture', thumb: '/images/portfolio/photo2.jpg', title: 'Podium Speaker', category: 'Photography', year: '2025' },
-  { type: 'video', thumb: '/images/portfolio/video3.jpg', youtube: null, title: 'Virunga Silver', category: 'Documentary', year: '2025' },
-  { type: 'picture', thumb: '/images/portfolio/photo3.jpg', title: 'Blue Tree Light', category: 'Photography', year: '2025' },
-  { type: 'video', thumb: '/images/portfolio/video4.jpg', youtube: null, title: 'Hard Work Tastes Different', category: 'Commercial', year: '2025' },
-  { type: 'picture', thumb: '/images/portfolio/photo4.jpg', title: 'Studio Interview', category: 'Portrait', year: '2024' },
-  { type: 'video', thumb: '/images/portfolio/video5.jpg', youtube: null, title: 'Greenhouse Story', category: 'Documentary', year: '2024' },
-  { type: 'picture', thumb: '/images/portfolio/photo5.jpg', title: 'Child Portrait', category: 'Portrait', year: '2024' },
-  { type: 'video', thumb: '/images/portfolio/video6.jpg', youtube: null, title: 'Summit Stage', category: 'Event Film', year: '2024' },
-  { type: 'picture', thumb: '/images/portfolio/photo6.jpg', title: 'Panel Talk', category: 'Event', year: '2024' }
-];
-
-const teamMembers = [
-  {
-    slug: 'fiette',
-    image: '/images/team/fiette.webp',
-    name: 'Fiette',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'serge',
-    image: '/images/team/serge.webp',
-    name: 'Serge',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'octave',
-    image: '/images/team/octave-placeholder.svg',
-    name: 'Octave',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'innocent',
-    image: '/images/team/innocent.webp',
-    name: 'Innocent',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  },
-  {
-    slug: 'ice',
-    image: '/images/team/ice.webp',
-    name: 'Ice',
-    role: 'Team member',
-    bio: 'Profile details coming soon.',
-    cv: '/cv/cedric-cv.pdf',
-    instagram: '',
-    linkedin: '',
-    vimeo: '',
-    website: ''
-  }
-];
-
-app.get('/', (req, res) => {
-  res.render('home', {
-    title: 'Octavisual — Visual Stories',
-    items: portfolioItems,
-    team: teamMembers,
-    success: req.query.success === 'true',
-    error: req.query.error === 'true'
-  });
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).type('text').send('Something went wrong.');
 });
 
-app.post('/contact', async (req, res) => {
-  const { name, email, subject, message } = req.body;
-
-  try {
-    await transporter.sendMail({
-      from: `"${name}" <${process.env.SMTP_USER}>`,
-      replyTo: email,
-      to: process.env.CONTACT_TO_EMAIL,
-      subject: `New message from ${name}: ${subject}`,
-      text: message,
-      html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Subject:</strong> ${subject}</p><p>${message}</p>`
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Octavisual running at http://localhost:${PORT}`);
     });
-    res.redirect('/?success=true#contact');
-  } catch (err) {
-    console.error('Contact form email failed:', err);
-    res.redirect('/?error=true#contact');
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Octavisual running at http://localhost:${PORT}`);
-});
+  })
+  .catch(error => {
+    console.error('Could not connect to MongoDB:', error.message);
+    process.exit(1);
+  });

@@ -1,0 +1,67 @@
+<% const f = section.fields; const slideCount = heroSlides.length; %>
+<section id="<%= section.anchor %>" class="workspace-panel hero-panel" data-nav-section="<%= section.anchor %>">
+  <div class="hero-slider" id="heroBook" aria-label="Featured Octavisual work" aria-roledescription="carousel">
+    <% heroSlides.forEach(function(slide, index) { %>
+      <figure
+        class="hero-slide <%= index === 0 ? 'is-active' : '' %>"
+        data-slide="<%= index %>"
+        aria-hidden="<%= index === 0 ? 'false' : 'true' %>"
+      >
+        <img
+          src="<%= slide.src %>"
+          <% if (slide.srcset) { %>srcset="<%= slide.srcset %>" sizes="(max-width: 760px) 100vw, 90vw"<% } %>
+          alt="<%= slide.alt %>"
+          <% if (index === 0) { %>fetchpriority="high"<% } else { %>loading="lazy"<% } %>
+        >
+        <span class="hero-page-edge" aria-hidden="true"></span>
+      </figure>
+    <% }); %>
+  </div>
+  <div class="hero-shade" aria-hidden="true"></div>
+
+  <div class="panel-topline hero-topline">
+    <div class="panel-kicker"><span class="status-dot"></span> <%= f.kicker %></div>
+    <div class="panel-kicker"><%= f.stamp %></div>
+  </div>
+
+  <div class="hero-copy">
+    <% if (services.length) { %><span class="eyebrow"><%= services.map(function(s) { return s.name; }).join(' · ') %></span><% } %>
+    <h1><%= f.headline %><br><em><%= f.headlineEmphasis %></em></h1>
+    <% if (f.lede) { %><p><%= f.lede %></p><% } %>
+  </div>
+
+  <% if (slideCount > 1) { %>
+    <div class="hero-page-cue" aria-hidden="true">
+      <span class="hero-page-cue-line"></span>
+      <span><%= f.cue %></span>
+    </div>
+  <% } %>
+
+  <div class="hero-bottom">
+    <% if (f.ctaLabel) { %>
+      <a href="#portfolio" class="round-cta magnetic" data-cursor-text="EXPLORE">
+        <span><%= f.ctaLabel %></span>
+        <span aria-hidden="true">↘</span>
+      </a>
+    <% } %>
+
+    <% if (slideCount > 1) { %>
+      <div class="hero-pagination" aria-label="Hero page controls">
+        <span class="hero-counter"><strong id="heroCurrent">01</strong> / <%= String(slideCount).padStart(2, '0') %></span>
+
+        <div class="hero-book-controls" aria-label="Turn hero pages">
+          <button id="heroPrev" class="hero-page-button" type="button" aria-label="Previous hero page">←</button>
+          <button id="heroNext" class="hero-page-button" type="button" aria-label="Next hero page">→</button>
+        </div>
+
+        <div class="hero-dots">
+          <% for (let i = 0; i < slideCount; i++) { %>
+            <button class="hero-dot <%= i === 0 ? 'is-active' : '' %>" data-index="<%= i %>" aria-label="Show hero page <%= i + 1 %>" aria-current="<%= i === 0 ? 'true' : 'false' %>"><span></span></button>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <p class="sr-only" id="heroSlideStatus" aria-live="polite">Hero page 1 of <%= slideCount %></p>
+</section>

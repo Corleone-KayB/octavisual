@@ -407,7 +407,7 @@
     const bio = teamField(data, '[data-team-bio]');
 
     if (teamProfileImage && image) {
-      teamProfileImage.src = image.currentSrc || image.src;
+      teamProfileImage.src = image.dataset.profileSrc || image.currentSrc || image.src;
       teamProfileImage.alt = name || image.alt || 'Octavisual team member';
     }
     if (teamProfileName) teamProfileName.textContent = name;

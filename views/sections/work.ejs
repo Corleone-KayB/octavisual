@@ -1,0 +1,43 @@
+<% const f = section.fields;
+   const items = work.film.concat(work.photography).sort(function(a, b) { return a.order - b.order; }); %>
+<section id="<%= section.anchor %>" class="workspace-panel work-panel" data-nav-section="<%= section.anchor %>">
+  <div class="panel-header panel-header--work">
+    <span class="panel-number"><%= section.number %></span>
+    <span class="panel-title"><%= section.title %></span>
+    <span class="panel-meta"><%= items.length %> projects</span>
+  </div>
+
+  <div class="work-toolbar">
+    <p class="work-intro"><%= f.intro %></p>
+    <div class="filter-tabs" role="group" aria-label="Filter portfolio">
+      <button class="filter-tab is-active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="video">Film</button>
+      <button class="filter-tab" data-filter="picture">Photography</button>
+      <span class="filter-indicator" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <% items.forEach(function(item, index) { const isFilm = item.mediaType === 'film'; %>
+      <article class="project-card project-card--<%= (index % 5) + 1 %>" data-type="<%= isFilm ? 'video' : 'picture' %>">
+        <div class="project-media" data-cursor-text="<%= isFilm ? (item.youtubeId ? 'PLAY' : 'SOON') : 'VIEW' %>">
+          <img src="<%= item.thumb.src %>" alt="<%= item.alt || item.title %>" loading="lazy">
+          <div class="project-shade"></div>
+          <% if (isFilm && item.youtubeId) { %>
+            <a class="project-hit" href="https://www.youtube.com/watch?v=<%= item.youtubeId %>" target="_blank" rel="noopener" aria-label="Watch <%= item.title %>"></a>
+          <% } else if (!isFilm) { %>
+            <button class="project-hit lightbox-trigger" type="button" data-image="<%= item.full %>" data-title="<%= item.title %>" aria-label="View <%= item.title %>"></button>
+          <% } else { %>
+            <button class="project-hit project-hit--disabled" type="button" aria-label="Video preview coming soon"></button>
+          <% } %>
+          <span class="project-index"><%= String(index + 1).padStart(2, '0') %></span>
+          <span class="project-icon"><%= isFilm ? '▶' : '↗' %></span>
+        </div>
+        <div class="project-info">
+          <h3><%= item.title %></h3>
+          <p><%= item.categoryNames.join(', ') %> · <%= item.year %></p>
+        </div>
+      </article>
+    <% }); %>
+  </div>
+</section>

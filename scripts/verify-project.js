@@ -8,6 +8,12 @@ const required = [
   'views/home.ejs',
   'views/partials/header.ejs',
   'views/partials/footer.ejs',
+  'views/sections/hero.ejs',
+  'views/sections/about.ejs',
+  'views/sections/work.ejs',
+  'views/sections/team.ejs',
+  'views/sections/contact.ejs',
+  'scripts/seed.js',
   'public/css/style.css',
   'public/js/app-ui.js',
   'public/js/animations.js',
@@ -34,14 +40,22 @@ for (const relative of required) {
 }
 if (!failed) pass('Required project files and five hero images exist.');
 
-const home = fs.readFileSync(path.join(root, 'views/home.ejs'), 'utf8');
-for (const token of ['id="home"', 'id="heroBook"', 'id="heroPrev"', 'id="heroNext"', 'hero-page-edge', 'heroSlideStatus']) {
-  if (!home.includes(token)) fail(`home.ejs missing ${token}`);
+// Page markup is split into views/home.ejs + one partial per section type,
+// and the copy now lives in MongoDB (scripts/seed.js holds the originals).
+const home = ['views/home.ejs', ...fs.readdirSync(path.join(root, 'views/sections')).map(file => `views/sections/${file}`)]
+  .map(file => fs.readFileSync(path.join(root, file), 'utf8'))
+  .join('\n');
+const seed = fs.readFileSync(path.join(root, 'scripts/seed.js'), 'utf8');
+for (const token of ['hero-panel', 'id="heroBook"', 'id="heroPrev"', 'id="heroNext"', 'hero-page-edge', 'heroSlideStatus']) {
+  if (!home.includes(token)) fail(`views missing ${token}`);
 }
 pass('Hero book markup is present.');
 
-for (const token of ['id="about"', 'about-scroll-stage', 'about-cinematic-frame', 'about-cinematic-image', 'about-emotional', 'Since 2017, in Kigali', "Every story we shoot"]) {
-  if (!home.includes(token)) fail(`home.ejs missing cinematic About token ${token}`);
+for (const token of ['about-panel', 'about-scroll-stage', 'about-cinematic-frame', 'about-cinematic-image', 'about-emotional']) {
+  if (!home.includes(token)) fail(`views missing cinematic About token ${token}`);
+}
+for (const token of ['Since 2017, in Kigali', 'Every story we shoot']) {
+  if (!seed.includes(token)) fail(`seed.js missing About copy ${token}`);
 }
 pass('Cinematic About markup and copy are present.');
 

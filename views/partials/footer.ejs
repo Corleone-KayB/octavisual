@@ -1,5 +1,6 @@
+<% const footer = settings.footer || {}; %>
 <footer class="workspace-footer">
-  <span>© <%= new Date().getFullYear() %> Octavisual.</span>
-  <span>Film · Photography · Visual storytelling</span>
-  <a href="#home">Back to top ↑</a>
+  <span>© <%= new Date().getFullYear() %> <%= footer.copyright %></span>
+  <% if (footer.tagline) { %><span><%= footer.tagline %></span><% } %>
+  <a href="#<%= sections.length ? sections[0].anchor : 'home' %>"><%= footer.backToTop || 'Back to top ↑' %></a>
 </footer>

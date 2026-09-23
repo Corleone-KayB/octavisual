@@ -1,0 +1,19 @@
+<% const f = section.fields; const paragraphs = String(f.body || '').split(/\n{2,}/).map(function(p) { return p.trim(); }).filter(Boolean); %>
+<section id="<%= section.anchor %>" class="workspace-panel text-panel" data-nav-section="<%= section.anchor %>">
+  <div class="panel-header">
+    <span class="panel-number"><%= section.number %></span>
+    <span class="panel-title"><%= section.title %></span>
+    <span class="panel-meta"><%= f.meta %></span>
+  </div>
+
+  <div class="text-panel-body">
+    <% if (f.statement || f.statementEmphasis) { %>
+      <p class="statement"><%= f.statement %><% if (f.statementEmphasis) { %><br><em><%= f.statementEmphasis %></em><% } %></p>
+    <% } %>
+    <% if (paragraphs.length) { %>
+      <div class="text-panel-copy">
+        <% paragraphs.forEach(function(paragraph) { %><p><%= paragraph %></p><% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
