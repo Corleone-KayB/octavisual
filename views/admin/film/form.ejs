@@ -1,0 +1,65 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow"><a href="/admin/film">Film</a></p>
+    <h1><%= item._id ? 'Edit film' : 'Add film' %></h1>
+  </div>
+</header>
+
+<%- include('../partials/errors') %>
+
+<form method="post" action="<%= item._id ? '/admin/film/' + item._id : '/admin/film' %>" enctype="multipart/form-data" class="adm-form" data-film-form data-item-id="<%= item._id || '' %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="adm-grid-2 adm-grid-2--wide">
+    <section class="adm-card">
+      <div class="adm-field">
+        <label for="youtubeUrl">YouTube link</label>
+        <input id="youtubeUrl" name="youtubeUrl" type="text" inputmode="url" value="<%= item.youtubeUrl %>" placeholder="https://www.youtube.com/watch?v=… or youtu.be/…" data-youtube-input autocomplete="off">
+        <p class="adm-hint" data-youtube-status role="status">Paste any YouTube link: watch, youtu.be, Shorts or embed. The title and thumbnail are filled in for you.</p>
+      </div>
+      <div class="adm-field">
+        <label for="title">Title <span class="adm-req" aria-hidden="true">*</span></label>
+        <input id="title" name="title" type="text" value="<%= item.title %>" maxlength="140" data-title-input>
+      </div>
+      <div class="adm-field">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4" maxlength="2000"><%= item.description %></textarea>
+      </div>
+      <div class="adm-grid-2">
+        <div class="adm-field">
+          <label for="client">Client</label>
+          <input id="client" name="client" type="text" value="<%= item.client %>" maxlength="120">
+        </div>
+        <div class="adm-field">
+          <label for="year">Year</label>
+          <input id="year" name="year" type="text" inputmode="numeric" pattern="(19|20)[0-9]{2}" value="<%= item.year %>" maxlength="4" placeholder="<%= new Date().getFullYear() %>">
+        </div>
+      </div>
+      <%- include('../partials/taxonomy', { categories: categories, selectedCategories: item.categories, mediaType: 'film', tags: item.tags, allTags: allTags }) %>
+    </section>
+
+    <section class="adm-card">
+      <h2>Preview</h2>
+      <figure class="adm-video-preview">
+        <img src="<%= thumbPreview || '' %>" alt="" data-youtube-preview <% if (!thumbPreview) { %>hidden<% } %>>
+        <span class="adm-video-preview-empty" data-youtube-empty <% if (thumbPreview) { %>hidden<% } %>>Paste a link to see the thumbnail</span>
+      </figure>
+      <div class="adm-field">
+        <label for="thumbnail">Custom thumbnail (optional)</label>
+        <input id="thumbnail" name="thumbnail" type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-file-preview>
+        <p class="adm-hint">Overrides the YouTube thumbnail. 16:9, at least 1280px wide.</p>
+      </div>
+      <% if (item.customThumbnailUrl) { %>
+        <label class="adm-check"><input type="checkbox" name="removeCustomThumbnail"> <span>Remove custom thumbnail (use YouTube’s)</span></label>
+      <% } %>
+      <label class="adm-check"><input type="checkbox" name="published" <% if (item.published) { %>checked<% } %>> <span>Published</span></label>
+      <label class="adm-check"><input type="checkbox" name="featured" <% if (item.featured) { %>checked<% } %>> <span>Featured (full-width card)</span></label>
+    </section>
+  </div>
+
+  <div class="adm-actions adm-actions--sticky">
+    <button class="adm-btn adm-btn--primary" type="submit"><%= item._id ? 'Save film' : 'Add film' %></button>
+    <a class="adm-btn adm-btn--ghost" href="/admin/film">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/bottom') %>

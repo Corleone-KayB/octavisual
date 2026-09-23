@@ -1,0 +1,36 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Selected work</p>
+    <h1>Film</h1>
+    <p class="adm-muted">YouTube films shown under the Film tab. Drafts are hidden from the site.</p>
+  </div>
+  <div class="adm-quick">
+    <a class="adm-btn" href="/admin/film/bulk">Bulk add</a>
+    <a class="adm-btn adm-btn--primary" href="/admin/film/new">Add film</a>
+  </div>
+</header>
+
+<section class="adm-card">
+  <ol class="adm-sortable adm-sortable--media" data-reorder-url="/admin/film/reorder" aria-label="Films">
+    <% items.forEach(function(item) { %>
+      <li class="adm-row" data-id="<%= item._id %>">
+        <button class="adm-handle" type="button" aria-label="Move <%= item.title %> (use arrow keys)">⋮⋮</button>
+        <% if (item.thumb) { %><img class="adm-thumb adm-thumb--wide" src="<%= item.thumb %>" alt="" loading="lazy"><% } else { %><span class="adm-thumb adm-thumb--wide adm-thumb--empty" aria-hidden="true">▶</span><% } %>
+        <div class="adm-row-main">
+          <strong><%= item.title %></strong>
+          <span class="adm-muted adm-small"><%= [item.categoryNames.join(', '), item.year].filter(Boolean).join(' · ') %></span>
+          <% if (!item.youtubeId) { %><span class="adm-badge adm-badge--muted">No video yet</span><% } %>
+        </div>
+        <%- include('../partials/row-actions', {
+          base: '/admin/film', item: item,
+          toggles: [{ field: 'published', on: 'Published', off: 'Draft' }, { field: 'featured', on: 'Featured', off: 'Not featured' }],
+          editHref: '/admin/film/' + item._id + '/edit', deleteLabel: item.title
+        }) %>
+      </li>
+    <% }); %>
+  </ol>
+  <% if (!items.length) { %><p class="adm-muted">No films yet. <a href="/admin/film/new">Add your first film</a>.</p><% } %>
+  <p class="adm-hint" data-reorder-status role="status"></p>
+</section>
+<%- include('../partials/bottom') %>

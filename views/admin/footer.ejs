@@ -1,0 +1,28 @@
+<%- include('partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Page</p>
+    <h1>Footer</h1>
+  </div>
+</header>
+
+<%- include('partials/errors') %>
+
+<form method="post" action="/admin/footer" class="adm-card adm-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="adm-field">
+    <label for="copyright">Copyright name <span class="adm-req" aria-hidden="true">*</span></label>
+    <input id="copyright" name="copyright" type="text" value="<%= footer.copyright %>" maxlength="80" required>
+    <p class="adm-hint">Shown after “© <%= new Date().getFullYear() %>”. The year updates automatically.</p>
+  </div>
+  <div class="adm-field">
+    <label for="tagline">Tagline</label>
+    <input id="tagline" name="tagline" type="text" value="<%= footer.tagline %>" maxlength="120">
+  </div>
+  <div class="adm-field">
+    <label for="backToTop">“Back to top” label</label>
+    <input id="backToTop" name="backToTop" type="text" value="<%= footer.backToTop %>" maxlength="40">
+  </div>
+  <div class="adm-actions"><button class="adm-btn adm-btn--primary" type="submit">Save footer</button></div>
+</form>
+<%- include('partials/bottom') %>

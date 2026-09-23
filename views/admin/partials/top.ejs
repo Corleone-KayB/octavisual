@@ -1,0 +1,71 @@
+<%
+  const navGroups = [
+    { label: 'Overview', items: [{ href: '/admin', label: 'Dashboard' }] },
+    { label: 'Page', items: [
+      { href: '/admin/sections', label: 'Sections' },
+      { href: '/admin/hero', label: 'Hero slides' },
+      { href: '/admin/about', label: 'About' },
+      { href: '/admin/services', label: 'Services' },
+      { href: '/admin/team', label: 'Team' },
+      { href: '/admin/contact', label: 'Contact & socials' },
+      { href: '/admin/footer', label: 'Footer' }
+    ] },
+    { label: 'Selected work', items: [
+      { href: '/admin/film', label: 'Film' },
+      { href: '/admin/photography', label: 'Photography' },
+      { href: '/admin/categories', label: 'Categories' }
+    ] }
+  ];
+  const path = '/admin' + (typeof currentPath === 'string' && currentPath !== '/' ? currentPath : '');
+  function isCurrent(href) { return href === '/admin' ? path === '/admin' : path === href || path.indexOf(href + '/') === 0; }
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <title><%= title %> · Octavisual admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="adm">
+  <a class="adm-skip" href="#adm-main">Skip to content</a>
+  <div class="adm-shell">
+    <aside class="adm-sidebar" aria-label="Admin navigation">
+      <div class="adm-brand">
+        <img src="/images/logo.png" alt="" width="34" height="34">
+        <span>Octavisual <em>studio</em></span>
+      </div>
+      <button class="adm-nav-toggle" type="button" aria-expanded="false" aria-controls="adm-nav">Menu</button>
+      <nav id="adm-nav" class="adm-nav">
+        <% navGroups.forEach(function(group) { %>
+          <p class="adm-nav-label"><%= group.label %></p>
+          <ul>
+            <% group.items.forEach(function(item) { %>
+              <li><a href="<%= item.href %>" <% if (isCurrent(item.href)) { %>aria-current="page"<% } %>><%= item.label %></a></li>
+            <% }); %>
+          </ul>
+        <% }); %>
+        <div class="adm-nav-foot">
+          <a class="adm-btn adm-btn--ghost" href="/" target="_blank" rel="noopener">View site ↗</a>
+          <form method="post" action="/admin/logout">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="adm-btn adm-btn--ghost" type="submit">Log out</button>
+          </form>
+          <% if (typeof admin !== 'undefined' && admin) { %><p class="adm-muted adm-small"><%= admin.email %></p><% } %>
+        </div>
+      </nav>
+    </aside>
+
+    <main id="adm-main" class="adm-main" tabindex="-1">
+      <% if (typeof cloudinaryReady !== 'undefined' && !cloudinaryReady) { %>
+        <p class="adm-banner adm-banner--warn" role="status">Image storage is not configured. Set the CLOUDINARY_* variables to enable uploads.</p>
+      <% } %>
+      <% if (typeof flash !== 'undefined' && flash) { %>
+        <p class="adm-banner adm-banner--<%= flash.type === 'error' ? 'error' : 'success' %>" role="<%= flash.type === 'error' ? 'alert' : 'status' %>"><%= flash.text %></p>
+      <% } %>

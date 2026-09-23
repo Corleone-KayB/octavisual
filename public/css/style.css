@@ -1,27 +1,3 @@
-:root {
-  --canvas: #080a0d;
-  --panel: #101318;
-  --panel-soft: #14181e;
-  --panel-deep: #0c0f13;
-  --text: #f2f0ea;
-  --muted: rgba(242, 240, 234, 0.56);
-  --muted-strong: rgba(242, 240, 234, 0.74);
-  --line: rgba(255, 255, 255, 0.075);
-  --line-strong: rgba(255, 255, 255, 0.14);
-  --accent: #8fb8b4;
-  --accent-bright: #b9d7d3;
-  --warm: #d5b694;
-  --danger: #df8267;
-  --brand-rust: #c5422c;
-  --brand-coral: #d45a43;
-  --sidebar-w: 72px;
-  --gutter: 18px;
-  --radius: 30px;
-  --radius-sm: 18px;
-  --sans: 'Manrope', 'Segoe UI', Arial, sans-serif;
-  --serif: 'Instrument Serif', Georgia, serif;
-}
-
 * {
   box-sizing: border-box;
   margin: 0;

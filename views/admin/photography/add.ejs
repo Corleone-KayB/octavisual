@@ -1,0 +1,73 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow"><a href="/admin/photography">Photography</a></p>
+    <h1>Add photos</h1>
+    <p class="adm-muted">Upload from your computer or paste image links. Linked images are downloaded and stored in Octavisual’s own media library, so the site never depends on the original link.</p>
+  </div>
+</header>
+
+<div class="adm-photo-add" data-photo-uploader data-max-mb="<%= maxMb %>">
+  <div class="adm-grid-2">
+    <section class="adm-card" aria-labelledby="fromComputer">
+      <h2 id="fromComputer">From your computer</h2>
+      <label class="adm-dropzone" data-dropzone>
+        <input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" data-file-input class="sr-only">
+        <span class="adm-dropzone-title">Drop images here or <u>browse</u></span>
+        <span class="adm-small adm-muted">JPG, PNG, WebP or AVIF · up to <%= maxMb %>MB each</span>
+      </label>
+    </section>
+
+    <section class="adm-card" aria-labelledby="fromLinks">
+      <h2 id="fromLinks">From links</h2>
+      <div class="adm-field">
+        <label for="imageLinks">Image links (one per line)</label>
+        <textarea id="imageLinks" rows="4" placeholder="https://example.com/photo.jpg" data-link-input></textarea>
+      </div>
+      <button class="adm-btn" type="button" data-link-add>Add links to the queue</button>
+    </section>
+  </div>
+
+  <section class="adm-card" aria-labelledby="batchDetails">
+    <h2 id="batchDetails">Applied to every photo in this batch</h2>
+    <form data-batch-form>
+      <%- include('../partials/taxonomy', { categories: categories, selectedCategories: [], mediaType: 'photography', tags: [], allTags: allTags }) %>
+      <label class="adm-check"><input type="checkbox" name="published" checked> <span>Publish immediately</span></label>
+    </form>
+  </section>
+
+  <section class="adm-card" aria-labelledby="queueTitle">
+    <div class="adm-head adm-head--inline">
+      <h2 id="queueTitle">Queue <span class="adm-muted" data-queue-count>(0)</span></h2>
+      <button class="adm-btn adm-btn--primary" type="button" data-upload-all disabled>Upload all</button>
+    </div>
+    <p class="adm-hint">Each photo needs a title and alt text (a short description for screen readers and search engines).</p>
+    <ul class="adm-queue" data-queue aria-live="polite"></ul>
+    <p class="adm-muted" data-queue-empty>Nothing queued yet.</p>
+    <p class="adm-banner adm-banner--success" data-queue-done hidden>All done. <a href="/admin/photography">View photos</a></p>
+  </section>
+
+  <template data-queue-template>
+    <li class="adm-queue-item">
+      <img class="adm-thumb" alt="" data-q-preview>
+      <div class="adm-queue-fields">
+        <p class="adm-small adm-muted adm-truncate" data-q-source></p>
+        <div class="adm-grid-2">
+          <div class="adm-field">
+            <label data-q-label="title">Title</label>
+            <input type="text" maxlength="140" required data-q-title>
+          </div>
+          <div class="adm-field">
+            <label data-q-label="alt">Alt text</label>
+            <input type="text" maxlength="300" required data-q-alt placeholder="Describe the photo">
+          </div>
+        </div>
+        <label class="adm-check adm-small"><input type="checkbox" data-q-featured> <span>Featured</span></label>
+        <progress max="100" value="0" data-q-progress></progress>
+        <p class="adm-small" data-q-status role="status">Ready</p>
+      </div>
+      <button class="adm-btn adm-btn--small adm-btn--ghost" type="button" data-q-remove>Remove</button>
+    </li>
+  </template>
+</div>
+<%- include('../partials/bottom') %>

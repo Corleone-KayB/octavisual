@@ -1,0 +1,38 @@
+<%# Category checkboxes with inline create + tag input with autocomplete.
+    Expects: categories, selectedCategories (string ids), mediaType, tags (array), allTags %>
+<% const selected = (selectedCategories || []).map(String); %>
+<fieldset class="adm-field adm-fieldset" data-category-picker data-media-type="<%= mediaType %>">
+  <legend>Categories</legend>
+  <div class="adm-checks" data-category-list>
+    <% categories.forEach(function(category) { %>
+      <label class="adm-check">
+        <input type="checkbox" name="categories" value="<%= category._id %>" <% if (selected.includes(String(category._id))) { %>checked<% } %>>
+        <span><%= category.name %></span>
+      </label>
+    <% }); %>
+    <% if (!categories.length) { %><p class="adm-muted adm-small" data-category-empty>No categories yet — create one below.</p><% } %>
+  </div>
+  <div class="adm-inline-create">
+    <label class="sr-only" for="newCategory-<%= mediaType %>">New category name</label>
+    <input id="newCategory-<%= mediaType %>" type="text" maxlength="60" placeholder="New category…" data-category-new>
+    <button class="adm-btn adm-btn--small" type="button" data-category-create>Create</button>
+    <span class="adm-small adm-muted" data-category-status role="status"></span>
+  </div>
+</fieldset>
+
+<div class="adm-field" data-tag-input>
+  <label for="tagEntry-<%= mediaType %>">Tags</label>
+  <div class="adm-tags">
+    <ul class="adm-tag-list" data-tag-list aria-label="Selected tags">
+      <% (tags || []).forEach(function(tag) { %>
+        <li class="adm-tag"><span><%= tag %></span><button type="button" aria-label="Remove tag <%= tag %>" data-tag-remove>×</button></li>
+      <% }); %>
+    </ul>
+    <input id="tagEntry-<%= mediaType %>" type="text" list="tagOptions-<%= mediaType %>" maxlength="40" placeholder="Type a tag and press Enter" data-tag-entry autocomplete="off">
+  </div>
+  <datalist id="tagOptions-<%= mediaType %>">
+    <% (allTags || []).forEach(function(tag) { %><option value="<%= tag %>"></option><% }); %>
+  </datalist>
+  <input type="hidden" name="tags" value="<%= (tags || []).join(', ') %>" data-tag-value>
+  <p class="adm-hint">Press Enter or comma to add. Suggestions come from tags you have already used.</p>
+</div>

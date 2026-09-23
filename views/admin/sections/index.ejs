@@ -1,0 +1,32 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Page</p>
+    <h1>Sections</h1>
+    <p class="adm-muted">The homepage shows visible sections in this order. Drag the handle (or focus it and use the arrow keys) to reorder.</p>
+  </div>
+  <% if (canAdd) { %><a class="adm-btn adm-btn--primary" href="/admin/sections/new">Add section</a><% } %>
+</header>
+
+<section class="adm-card">
+  <ol class="adm-sortable" data-reorder-url="/admin/sections/reorder" aria-label="Sections">
+    <% sections.forEach(function(section) { %>
+      <li class="adm-row" data-id="<%= section._id %>">
+        <button class="adm-handle" type="button" aria-label="Move <%= section.title %> (use arrow keys)">⋮⋮</button>
+        <div class="adm-row-main">
+          <strong><%= section.title %></strong>
+          <span class="adm-badge"><%= typeLabels[section.type] %></span>
+          <% if (!section.visible) { %><span class="adm-badge adm-badge--muted">Hidden</span><% } %>
+        </div>
+        <%- include('../partials/row-actions', {
+          base: '/admin/sections', item: section,
+          toggles: [{ field: 'visible', on: 'Visible', off: 'Hidden' }],
+          editHref: '/admin/sections/' + section._id + '/edit', deleteLabel: section.title
+        }) %>
+      </li>
+    <% }); %>
+  </ol>
+  <% if (!sections.length) { %><p class="adm-muted">No sections yet. Run <code>npm run seed</code> or add one.</p><% } %>
+  <p class="adm-hint" data-reorder-status role="status"></p>
+</section>
+<%- include('../partials/bottom') %>

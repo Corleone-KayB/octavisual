@@ -1,0 +1,39 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow"><a href="/admin/film">Film</a></p>
+    <h1>Bulk add films</h1>
+    <p class="adm-muted">Paste up to 25 YouTube links, one per line. Each becomes a draft with its YouTube title and thumbnail; review and publish them from the Film list.</p>
+  </div>
+</header>
+
+<% if (results) { %>
+  <section class="adm-card" aria-labelledby="bulkResults">
+    <h2 id="bulkResults">Results</h2>
+    <% if (typeof summary !== 'undefined') { %><p><%= summary %></p><% } %>
+    <ul class="adm-results">
+      <% results.forEach(function(result) { %>
+        <li class="adm-result adm-result--<%= result.status %>">
+          <span class="adm-badge"><%= result.status %></span>
+          <% if (result.input) { %><code><%= result.input %></code><% } %>
+          <span><%= result.message %></span>
+        </li>
+      <% }); %>
+    </ul>
+    <a class="adm-btn" href="/admin/film">Go to Film</a>
+  </section>
+<% } %>
+
+<form method="post" action="/admin/film/bulk" class="adm-card adm-form" data-busy-form>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="adm-field">
+    <label for="urls">YouTube links</label>
+    <textarea id="urls" name="urls" rows="8" required placeholder="https://youtu.be/…&#10;https://www.youtube.com/watch?v=…&#10;https://www.youtube.com/shorts/…"><%= urls %></textarea>
+  </div>
+  <%- include('../partials/taxonomy', { categories: categories, selectedCategories: [], mediaType: 'film', tags: [], allTags: allTags }) %>
+  <p class="adm-hint">Categories and tags above are applied to every new draft.</p>
+  <div class="adm-actions">
+    <button class="adm-btn adm-btn--primary" type="submit" data-busy-label="Fetching from YouTube…">Create drafts</button>
+  </div>
+</form>
+<%- include('../partials/bottom') %>

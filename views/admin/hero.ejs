@@ -1,0 +1,67 @@
+<%- include('partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Page</p>
+    <h1>Hero</h1>
+    <p class="adm-muted">The book-style slider at the top of the homepage. Services appear as the small label above the headline.</p>
+  </div>
+</header>
+
+<section class="adm-card">
+  <h2>Slides</h2>
+  <ol class="adm-sortable adm-sortable--media" data-reorder-url="/admin/hero/slides/reorder" aria-label="Hero slides">
+    <% slides.forEach(function(slide, index) { %>
+      <li class="adm-row" data-id="<%= slide._id %>">
+        <button class="adm-handle" type="button" aria-label="Move slide <%= index + 1 %> (use arrow keys)">⋮⋮</button>
+        <img class="adm-thumb" src="<%= thumb(slide.imageUrl) %>" alt="" loading="lazy">
+        <form method="post" action="/admin/hero/slides/<%= slide._id %>" enctype="multipart/form-data" class="adm-row-main adm-form adm-form--row">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="adm-field adm-grow">
+            <label for="alt-<%= slide._id %>">Alt text</label>
+            <input id="alt-<%= slide._id %>" name="alt" type="text" value="<%= slide.alt %>" maxlength="300" required>
+          </div>
+          <div class="adm-field">
+            <label for="img-<%= slide._id %>">Replace image</label>
+            <input id="img-<%= slide._id %>" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+          </div>
+          <button class="adm-btn adm-btn--small" type="submit">Save</button>
+        </form>
+        <%- include('partials/row-actions', {
+          base: '/admin/hero/slides', item: slide,
+          toggles: [{ field: 'visible', on: 'Visible', off: 'Hidden' }],
+          editHref: null, deleteLabel: 'slide ' + (index + 1)
+        }) %>
+      </li>
+    <% }); %>
+  </ol>
+  <p class="adm-hint" data-reorder-status role="status"></p>
+
+  <h3 class="adm-subhead">Add a slide</h3>
+  <form method="post" action="/admin/hero/slides" enctype="multipart/form-data" class="adm-form adm-form--row">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="adm-field">
+      <label for="newSlideImage">Image <span class="adm-req" aria-hidden="true">*</span></label>
+      <input id="newSlideImage" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required>
+    </div>
+    <div class="adm-field adm-grow">
+      <label for="newSlideAlt">Alt text <span class="adm-req" aria-hidden="true">*</span></label>
+      <input id="newSlideAlt" name="alt" type="text" maxlength="300" required placeholder="Describe the photograph">
+    </div>
+    <button class="adm-btn adm-btn--primary" type="submit">Add slide</button>
+  </form>
+</section>
+
+<% if (section) { %>
+  <form method="post" action="/admin/sections/<%= section._id %>" class="adm-card adm-form">
+    <h2>Hero copy</h2>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="_copyOnly" value="1">
+    <input type="hidden" name="_return" value="/admin/hero">
+    <%- include('partials/section-fields', { fields: fields, values: section.fields }) %>
+    <p class="adm-hint">The label above the headline lists your <a href="/admin/services">services</a>.</p>
+    <div class="adm-actions"><button class="adm-btn adm-btn--primary" type="submit">Save copy</button></div>
+  </form>
+<% } else { %>
+  <p class="adm-banner adm-banner--warn">There is no hero section. <a href="/admin/sections/new?type=hero">Add one</a>.</p>
+<% } %>
+<%- include('partials/bottom') %>

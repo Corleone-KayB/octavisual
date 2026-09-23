@@ -1,0 +1,16 @@
+<%# Expects: base (e.g. /admin/film), item, toggles [{field,on,off}], editHref, deleteLabel %>
+<div class="adm-row-actions">
+  <% (toggles || []).forEach(function(toggle) { const on = Boolean(item[toggle.field]); %>
+    <form method="post" action="<%= base %>/<%= item._id %>/toggle/<%= toggle.field %>" class="adm-inline">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="adm-switch <%= on ? 'is-on' : '' %>" type="submit" aria-pressed="<%= on ? 'true' : 'false' %>" title="Toggle <%= toggle.field %>">
+        <span class="adm-switch-dot" aria-hidden="true"></span><%= on ? toggle.on : toggle.off %>
+      </button>
+    </form>
+  <% }); %>
+  <% if (editHref) { %><a class="adm-btn adm-btn--small" href="<%= editHref %>">Edit</a><% } %>
+  <form method="post" action="<%= base %>/<%= item._id %>/delete" class="adm-inline" data-confirm="Delete “<%= deleteLabel %>”? This cannot be undone.">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="adm-btn adm-btn--small adm-btn--danger" type="submit">Delete</button>
+  </form>
+</div>

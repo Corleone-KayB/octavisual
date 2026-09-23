@@ -1,0 +1,69 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow"><a href="/admin/team">Team</a></p>
+    <h1><%= member._id ? 'Edit ' + member.name : 'Add team member' %></h1>
+  </div>
+</header>
+
+<%- include('../partials/errors') %>
+
+<form method="post" action="<%= member._id ? '/admin/team/' + member._id : '/admin/team' %>" enctype="multipart/form-data" class="adm-card adm-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="adm-grid-2">
+    <div>
+      <div class="adm-field">
+        <label for="name">Name <span class="adm-req" aria-hidden="true">*</span></label>
+        <input id="name" name="name" type="text" value="<%= member.name %>" maxlength="80" required>
+      </div>
+      <div class="adm-field">
+        <label for="role">Role</label>
+        <input id="role" name="role" type="text" value="<%= member.role %>" maxlength="80" placeholder="e.g. Director of photography">
+      </div>
+      <div class="adm-field">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="5" maxlength="2000"><%= member.bio %></textarea>
+      </div>
+    </div>
+    <div>
+      <% if (preview) { %><img class="adm-preview adm-preview--portrait" src="<%= preview %>" alt="Current portrait of <%= member.name %>" data-file-preview-target="image"><% } %>
+      <div class="adm-field">
+        <label for="image">Portrait <% if (!member._id) { %><span class="adm-req" aria-hidden="true">*</span><% } %></label>
+        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-file-preview <% if (!member._id) { %>required<% } %>>
+        <p class="adm-hint">Portrait orientation (4:5) works best. JPG, PNG, WebP or AVIF.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="adm-subhead">Links</h2>
+  <div class="adm-grid-2">
+    <div class="adm-field">
+      <label for="cv">CV link</label>
+      <input id="cv" name="cv" type="text" value="<%= member.cv %>" placeholder="https://… or /cv/file.pdf">
+    </div>
+    <div class="adm-field">
+      <label for="instagram">Instagram</label>
+      <input id="instagram" name="instagram" type="url" value="<%= member.instagram %>" placeholder="https://instagram.com/…">
+    </div>
+    <div class="adm-field">
+      <label for="linkedin">LinkedIn</label>
+      <input id="linkedin" name="linkedin" type="url" value="<%= member.linkedin %>" placeholder="https://linkedin.com/in/…">
+    </div>
+    <div class="adm-field">
+      <label for="vimeo">Vimeo</label>
+      <input id="vimeo" name="vimeo" type="url" value="<%= member.vimeo %>">
+    </div>
+    <div class="adm-field">
+      <label for="website">Website</label>
+      <input id="website" name="website" type="url" value="<%= member.website %>">
+    </div>
+  </div>
+
+  <label class="adm-check"><input type="checkbox" name="visible" <% if (member.visible) { %>checked<% } %>> <span>Visible on the site</span></label>
+
+  <div class="adm-actions">
+    <button class="adm-btn adm-btn--primary" type="submit"><%= member._id ? 'Save' : 'Add team member' %></button>
+    <a class="adm-btn adm-btn--ghost" href="/admin/team">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/bottom') %>

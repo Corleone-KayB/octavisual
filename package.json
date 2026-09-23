@@ -7,7 +7,8 @@
     "start": "node app.js",
     "dev": "node app.js",
     "verify": "node scripts/verify-project.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "admin:reset": "node scripts/reset-admin.js"
   },
   "keywords": [
     "portfolio",

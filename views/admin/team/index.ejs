@@ -1,0 +1,46 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Page</p>
+    <h1>Team</h1>
+    <p class="adm-muted">Portraits appear in the “Small team, big stories” stage in this order.</p>
+  </div>
+  <a class="adm-btn adm-btn--primary" href="/admin/team/new">Add team member</a>
+</header>
+
+<section class="adm-card">
+  <ol class="adm-sortable adm-sortable--media" data-reorder-url="/admin/team/reorder" aria-label="Team members">
+    <% members.forEach(function(member) { %>
+      <li class="adm-row" data-id="<%= member._id %>">
+        <button class="adm-handle" type="button" aria-label="Move <%= member.name %> (use arrow keys)">⋮⋮</button>
+        <% if (member.thumb) { %><img class="adm-thumb adm-thumb--portrait" src="<%= member.thumb %>" alt="" loading="lazy"><% } %>
+        <div class="adm-row-main">
+          <strong><%= member.name %></strong>
+          <span class="adm-muted"><%= member.role %></span>
+          <% if (!member.visible) { %><span class="adm-badge adm-badge--muted">Hidden</span><% } %>
+        </div>
+        <%- include('../partials/row-actions', {
+          base: '/admin/team', item: member,
+          toggles: [{ field: 'visible', on: 'Visible', off: 'Hidden' }],
+          editHref: '/admin/team/' + member._id + '/edit', deleteLabel: member.name
+        }) %>
+      </li>
+    <% }); %>
+  </ol>
+  <% if (!members.length) { %><p class="adm-muted">No team members yet.</p><% } %>
+  <p class="adm-hint" data-reorder-status role="status"></p>
+</section>
+
+<% if (section) { %>
+  <form method="post" action="/admin/sections/<%= section._id %>" class="adm-card adm-form">
+    <h2>Team section copy</h2>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="_copyOnly" value="1">
+    <input type="hidden" name="_return" value="/admin/team">
+    <div class="adm-grid-2">
+      <%- include('../partials/section-fields', { fields: fields, values: section.fields }) %>
+    </div>
+    <div class="adm-actions"><button class="adm-btn adm-btn--primary" type="submit">Save copy</button></div>
+  </form>
+<% } %>
+<%- include('../partials/bottom') %>

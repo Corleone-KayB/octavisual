@@ -1,0 +1,53 @@
+<%- include('partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Selected work</p>
+    <h1>Categories</h1>
+    <p class="adm-muted">Categories become the filters under the Film and Photography tabs. Only categories with published work are shown on the site.</p>
+  </div>
+</header>
+
+<div class="adm-grid-2">
+  <% groups.forEach(function(group) { %>
+    <section class="adm-card" aria-labelledby="cat-<%= group.mediaType %>">
+      <h2 id="cat-<%= group.mediaType %>"><%= group.label %></h2>
+      <ol class="adm-sortable" data-reorder-url="/admin/categories/reorder" aria-label="<%= group.label %> categories">
+        <% group.items.forEach(function(category) { %>
+          <li class="adm-row" data-id="<%= category._id %>">
+            <button class="adm-handle" type="button" aria-label="Move <%= category.name %> (use arrow keys)">⋮⋮</button>
+            <form method="post" action="/admin/categories/<%= category._id %>" class="adm-row-main adm-form adm-form--row">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <div class="adm-field adm-grow">
+                <label for="cn-<%= category._id %>">Name</label>
+                <input id="cn-<%= category._id %>" name="name" type="text" value="<%= category.name %>" maxlength="60" required>
+              </div>
+              <div class="adm-field">
+                <label for="cs-<%= category._id %>">Slug</label>
+                <input id="cs-<%= category._id %>" name="slug" type="text" value="<%= category.slug %>" maxlength="80" pattern="[a-z0-9\-]+">
+              </div>
+              <button class="adm-btn adm-btn--small" type="submit">Save</button>
+            </form>
+            <span class="adm-badge" title="Items using this category"><%= category.count %></span>
+            <form method="post" action="/admin/categories/<%= category._id %>/delete" class="adm-inline" data-confirm="Delete “<%= category.name %>”? It will be removed from <%= category.count %> item(s).">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button class="adm-btn adm-btn--small adm-btn--danger" type="submit">Delete</button>
+            </form>
+          </li>
+        <% }); %>
+      </ol>
+      <% if (!group.items.length) { %><p class="adm-muted">No categories yet.</p><% } %>
+      <p class="adm-hint" data-reorder-status role="status"></p>
+
+      <form method="post" action="/admin/categories" class="adm-form adm-form--row">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="mediaType" value="<%= group.mediaType %>">
+        <div class="adm-field adm-grow">
+          <label for="new-<%= group.mediaType %>">New <%= group.label.toLowerCase() %> category</label>
+          <input id="new-<%= group.mediaType %>" name="name" type="text" maxlength="60" required>
+        </div>
+        <button class="adm-btn adm-btn--primary" type="submit">Add</button>
+      </form>
+    </section>
+  <% }); %>
+</div>
+<%- include('partials/bottom') %>

@@ -1,0 +1,14 @@
+<%# Renders the copy fields for a section type. Expects: fields, values %>
+<% fields.forEach(function(field) {
+     const id = 'fields_' + field.name;
+     const raw = values ? values[field.name] : '';
+     const value = field.kind === 'lines' ? (Array.isArray(raw) ? raw.join('\n') : '') : (raw == null ? '' : raw); %>
+  <div class="adm-field">
+    <label for="<%= id %>"><%= field.label %><% if (field.required) { %> <span class="adm-req" aria-hidden="true">*</span><% } %></label>
+    <% if (field.kind === 'text') { %>
+      <input id="<%= id %>" name="<%= id %>" type="text" value="<%= value %>" maxlength="<%= field.max %>" <% if (field.required) { %>required<% } %>>
+    <% } else { %>
+      <textarea id="<%= id %>" name="<%= id %>" rows="<%= field.kind === 'lines' ? 3 : 5 %>" maxlength="<%= field.max %>" <% if (field.required) { %>required<% } %>><%= value %></textarea>
+    <% } %>
+  </div>
+<% }); %>

@@ -1,0 +1,35 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Selected work</p>
+    <h1>Photography</h1>
+    <p class="adm-muted">Photos shown under the Photography tab, in this order. Drag the handle or use the arrow keys to reorder.</p>
+  </div>
+  <a class="adm-btn adm-btn--primary" href="/admin/photography/add">Add photos</a>
+</header>
+
+<section class="adm-card">
+  <ol class="adm-sortable adm-photo-grid" data-reorder-url="/admin/photography/reorder" aria-label="Photos">
+    <% items.forEach(function(item) { %>
+      <li class="adm-photo" data-id="<%= item._id %>">
+        <div class="adm-photo-media">
+          <img src="<%= item.thumb %>" alt="<%= item.alt %>" loading="lazy">
+          <button class="adm-handle" type="button" aria-label="Move <%= item.title %> (use arrow keys)">⋮⋮</button>
+          <% if (item.featured) { %><span class="adm-badge adm-photo-flag">Featured</span><% } %>
+        </div>
+        <div class="adm-photo-body">
+          <strong><%= item.title %></strong>
+          <span class="adm-muted adm-small"><%= item.categoryNames.join(', ') || 'No category' %><%= item.source === 'link' ? ' · imported' : '' %></span>
+        </div>
+        <%- include('../partials/row-actions', {
+          base: '/admin/photography', item: item,
+          toggles: [{ field: 'published', on: 'Published', off: 'Hidden' }, { field: 'featured', on: 'Featured', off: 'Not featured' }],
+          editHref: '/admin/photography/' + item._id + '/edit', deleteLabel: item.title
+        }) %>
+      </li>
+    <% }); %>
+  </ol>
+  <% if (!items.length) { %><p class="adm-muted">No photos yet. <a href="/admin/photography/add">Add some</a>.</p><% } %>
+  <p class="adm-hint" data-reorder-status role="status"></p>
+</section>
+<%- include('../partials/bottom') %>

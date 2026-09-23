@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %> · Octavisual admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="adm adm-login-page">
+  <main class="adm-login">
+    <img src="/images/logo.png" alt="" width="44" height="44">
+    <h1>Octavisual <em>studio</em></h1>
+    <p class="adm-muted">Sign in to manage the site.</p>
+    <% if (error) { %><p class="adm-banner adm-banner--error" role="alert"><%= error %></p><% } %>
+    <form method="post" action="/admin/login" class="adm-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="adm-field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="username" value="<%= email %>" required autofocus>
+      </div>
+      <div class="adm-field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="adm-btn adm-btn--primary adm-btn--block" type="submit">Sign in</button>
+    </form>
+    <a class="adm-small adm-muted" href="/">← Back to the site</a>
+  </main>
+</body>
+</html>

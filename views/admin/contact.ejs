@@ -1,0 +1,61 @@
+<%- include('partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Page</p>
+    <h1>Contact &amp; socials</h1>
+    <p class="adm-muted">Contact form messages are emailed to the CONTACT_TO_EMAIL address set on the server.</p>
+  </div>
+</header>
+
+<%- include('partials/errors') %>
+
+<form method="post" action="/admin/contact" class="adm-card adm-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <h2>Details</h2>
+  <div class="adm-grid-2">
+    <div class="adm-field">
+      <label for="contactEmail">Public email</label>
+      <input id="contactEmail" name="contactEmail" type="email" value="<%= settings.contactEmail %>" maxlength="200">
+    </div>
+    <div class="adm-field">
+      <label for="locationLines">Based in (one line per row)</label>
+      <textarea id="locationLines" name="locationLines" rows="2"><%= (settings.locationLines || []).join('\n') %></textarea>
+    </div>
+    <div class="adm-field">
+      <label for="phones">Phone numbers (one per row)</label>
+      <textarea id="phones" name="phones" rows="3" placeholder="+250 700 000 000&#10;Bookings | +250 780 000 000"><%= (settings.phones || []).map(function(p) { return p.label ? p.label + ' | ' + p.number : p.number; }).join('\n') %></textarea>
+      <p class="adm-hint">Optional label: <code>Label | number</code>.</p>
+    </div>
+  </div>
+
+  <h2 class="adm-subhead">Social links</h2>
+  <div class="adm-grid-2">
+    <div class="adm-field">
+      <label for="instagram">Instagram</label>
+      <input id="instagram" name="instagram" type="url" value="<%= settings.socials && settings.socials.instagram %>" placeholder="https://www.instagram.com/octavisual">
+      <p class="adm-hint">Also used for the Instagram link in the sidebar.</p>
+    </div>
+    <div class="adm-field">
+      <label for="youtube">YouTube</label>
+      <input id="youtube" name="youtube" type="url" value="<%= settings.socials && settings.socials.youtube %>">
+    </div>
+    <div class="adm-field">
+      <label for="linkedin">LinkedIn</label>
+      <input id="linkedin" name="linkedin" type="url" value="<%= settings.socials && settings.socials.linkedin %>">
+    </div>
+  </div>
+  <p class="adm-hint">Leave a link empty to hide it.</p>
+  <div class="adm-actions"><button class="adm-btn adm-btn--primary" type="submit">Save details</button></div>
+</form>
+
+<% if (section) { %>
+  <form method="post" action="/admin/sections/<%= section._id %>" class="adm-card adm-form">
+    <h2>Contact section copy</h2>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="_copyOnly" value="1">
+    <input type="hidden" name="_return" value="/admin/contact">
+    <%- include('partials/section-fields', { fields: fields, values: section.fields }) %>
+    <div class="adm-actions"><button class="adm-btn adm-btn--primary" type="submit">Save copy</button></div>
+  </form>
+<% } %>
+<%- include('partials/bottom') %>

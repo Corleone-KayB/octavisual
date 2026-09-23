@@ -1,0 +1,6 @@
+<% if (typeof errors !== 'undefined' && errors && errors.length) { %>
+  <div class="adm-banner adm-banner--error" role="alert">
+    <strong>Please fix the following:</strong>
+    <ul><% errors.forEach(function(message) { %><li><%= message %></li><% }); %></ul>
+  </div>
+<% } %>

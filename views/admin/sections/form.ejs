@@ -1,0 +1,58 @@
+<%- include('../partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow"><a href="/admin/sections">Sections</a></p>
+    <h1><%= isNew ? 'Add section' : 'Edit section' %></h1>
+  </div>
+</header>
+
+<%- include('../partials/errors') %>
+
+<% if (isNew && types.length > 1) { %>
+  <form method="get" action="/admin/sections/new" class="adm-card adm-form adm-form--row">
+    <div class="adm-field">
+      <label for="typePicker">Section type</label>
+      <select id="typePicker" name="type" data-autosubmit>
+        <% types.forEach(function(type) { %><option value="<%= type %>" <% if (type === section.type) { %>selected<% } %>><%= typeLabels[type] %></option><% }); %>
+      </select>
+    </div>
+    <noscript><button class="adm-btn" type="submit">Choose</button></noscript>
+  </form>
+<% } %>
+
+<form method="post" action="<%= isNew ? '/admin/sections' : '/admin/sections/' + section._id %>" class="adm-card adm-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% if (isNew) { %><input type="hidden" name="type" value="<%= section.type %>"><% } %>
+  <p class="adm-muted">Type: <strong><%= typeLabels[section.type] %></strong></p>
+
+  <div class="adm-grid-2">
+    <div class="adm-field">
+      <label for="title">Title <span class="adm-req" aria-hidden="true">*</span></label>
+      <input id="title" name="title" type="text" value="<%= section.title %>" maxlength="80" required>
+      <p class="adm-hint">Shown in the section header.</p>
+    </div>
+    <div class="adm-field">
+      <label for="navLabel">Navigation label</label>
+      <input id="navLabel" name="navLabel" type="text" value="<%= section.navLabel %>" maxlength="40">
+      <p class="adm-hint">Sidebar tooltip; defaults to the title.</p>
+    </div>
+  </div>
+
+  <label class="adm-check"><input type="checkbox" name="visible" <% if (section.visible) { %>checked<% } %>> <span>Visible on the site</span></label>
+
+  <% if (fields.length) { %>
+    <h2 class="adm-subhead">Copy</h2>
+    <%- include('../partials/section-fields', { fields: fields, values: section.fields }) %>
+  <% } %>
+
+  <% if (['hero', 'about', 'team', 'contact'].includes(section.type) && !isNew) { %>
+    <p class="adm-hint">Images and lists for this section are managed on the
+      <a href="/admin/<%= section.type === 'hero' ? 'hero' : section.type %>"><%= typeLabels[section.type] %> page</a>.</p>
+  <% } %>
+
+  <div class="adm-actions">
+    <button class="adm-btn adm-btn--primary" type="submit"><%= isNew ? 'Add section' : 'Save section' %></button>
+    <a class="adm-btn adm-btn--ghost" href="/admin/sections">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/bottom') %>

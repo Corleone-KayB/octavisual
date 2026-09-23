@@ -1,0 +1,38 @@
+<%- include('partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Page</p>
+    <h1>About</h1>
+    <p class="adm-muted">The cinematic scroll chapter: a full-bleed photograph with the studio statement over it.</p>
+  </div>
+</header>
+
+<% if (!section) { %>
+  <p class="adm-banner adm-banner--warn">There is no About section. <a href="/admin/sections/new?type=about">Add one</a>.</p>
+<% } else { %>
+  <section class="adm-card adm-grid-2">
+    <div>
+      <h2>Background image</h2>
+      <% if (preview) { %><img class="adm-preview" src="<%= preview %>" alt="<%= section.fields.imageAlt %>"><% } %>
+    </div>
+    <form method="post" action="/admin/about/image" enctype="multipart/form-data" class="adm-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="adm-field">
+        <label for="aboutImage">Replace image</label>
+        <input id="aboutImage" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required>
+        <p class="adm-hint">Landscape, at least 2000px wide. Dark, calm areas behind the text work best.</p>
+      </div>
+      <button class="adm-btn adm-btn--primary" type="submit">Upload</button>
+    </form>
+  </section>
+
+  <form method="post" action="/admin/sections/<%= section._id %>" class="adm-card adm-form">
+    <h2>Copy</h2>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="_copyOnly" value="1">
+    <input type="hidden" name="_return" value="/admin/about">
+    <%- include('partials/section-fields', { fields: fields, values: section.fields }) %>
+    <div class="adm-actions"><button class="adm-btn adm-btn--primary" type="submit">Save copy</button></div>
+  </form>
+<% } %>
+<%- include('partials/bottom') %>

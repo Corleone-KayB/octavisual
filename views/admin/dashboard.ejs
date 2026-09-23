@@ -1,0 +1,49 @@
+<%- include('partials/top') %>
+<header class="adm-head">
+  <div>
+    <p class="adm-eyebrow">Overview</p>
+    <h1>Dashboard</h1>
+  </div>
+  <a class="adm-btn" href="/" target="_blank" rel="noopener">View site ↗</a>
+</header>
+
+<section class="adm-stats" aria-label="Content counts">
+  <a class="adm-stat" href="/admin/film"><strong><%= counts.filmPublished %></strong><span>Published films</span><% if (counts.filmDrafts) { %><small><%= counts.filmDrafts %> draft<%= counts.filmDrafts === 1 ? '' : 's' %></small><% } %></a>
+  <a class="adm-stat" href="/admin/photography"><strong><%= counts.photoPublished %></strong><span>Published photos</span><% if (counts.photoDrafts) { %><small><%= counts.photoDrafts %> hidden</small><% } %></a>
+  <a class="adm-stat" href="/admin/categories"><strong><%= counts.categories %></strong><span>Categories</span></a>
+  <a class="adm-stat" href="/admin/sections"><strong><%= counts.sections %></strong><span>Visible sections</span><% if (counts.hiddenSections) { %><small><%= counts.hiddenSections %> hidden</small><% } %></a>
+  <a class="adm-stat" href="/admin/hero"><strong><%= counts.slides %></strong><span>Hero slides</span></a>
+  <a class="adm-stat" href="/admin/team"><strong><%= counts.team %></strong><span>Team members</span></a>
+</section>
+
+<div class="adm-grid-2">
+  <section class="adm-card">
+    <h2>Quick actions</h2>
+    <div class="adm-quick">
+      <a class="adm-btn adm-btn--primary" href="/admin/film/new">Add a film</a>
+      <a class="adm-btn" href="/admin/film/bulk">Bulk add YouTube links</a>
+      <a class="adm-btn adm-btn--primary" href="/admin/photography/add">Add photos</a>
+      <a class="adm-btn" href="/admin/team/new">Add team member</a>
+      <a class="adm-btn" href="/admin/sections">Reorder sections</a>
+      <a class="adm-btn" href="/admin/contact">Edit contact details</a>
+    </div>
+  </section>
+
+  <section class="adm-card">
+    <h2>Recently updated work</h2>
+    <% if (recent.length) { %>
+      <ul class="adm-plain-list">
+        <% recent.forEach(function(item) { %>
+          <li>
+            <a href="/admin/<%= item.mediaType === 'film' ? 'film' : 'photography' %>/<%= item._id %>/edit"><%= item.title %></a>
+            <span class="adm-badge"><%= item.mediaType === 'film' ? 'Film' : 'Photo' %></span>
+            <% if (!item.published) { %><span class="adm-badge adm-badge--muted"><%= item.mediaType === 'film' ? 'Draft' : 'Hidden' %></span><% } %>
+          </li>
+        <% }); %>
+      </ul>
+    <% } else { %>
+      <p class="adm-muted">Nothing yet.</p>
+    <% } %>
+  </section>
+</div>
+<%- include('partials/bottom') %>

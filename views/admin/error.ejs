@@ -1,0 +1,25 @@
+<% if (typeof csrfToken !== 'undefined' && typeof admin !== 'undefined') { %>
+  <%- include('partials/top') %>
+  <header class="adm-head"><h1><%= title %></h1></header>
+  <section class="adm-card"><p><%= message %></p><p><a class="adm-btn" href="/admin">Back to dashboard</a></p></section>
+  <%- include('partials/bottom') %>
+<% } else { %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %> · Octavisual admin</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="adm adm-login-page">
+  <main class="adm-login">
+    <h1><%= title %></h1>
+    <p><%= message %></p>
+    <a class="adm-btn" href="/admin/login">Go to sign in</a>
+  </main>
+</body>
+</html>
+<% } %>
