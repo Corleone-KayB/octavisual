@@ -78,104 +78,74 @@
   const aboutFootnote = document.querySelector('.about-cinematic-footnote');
 
   if (aboutPanel && aboutFrame && aboutImage && aboutCopy) {
-    const compactScaleX = window.matchMedia('(max-width: 760px)').matches ? .92 : .80;
-    const compactScaleY = window.matchMedia('(max-width: 760px)').matches ? .84 : .72;
-    const compactRadius = window.matchMedia('(max-width: 760px)').matches ? 24 : 34;
-    const fullRadius = window.matchMedia('(max-width: 760px)').matches ? 12 : 8;
-    const hold = { progress: 0 };
+    // Timing: the panel is ~150svh tall (style.css), so the sticky stage pins
+    // for ~50svh. Expand runs while the panel scrolls in, the hold covers the
+    // pinned stretch, and compress runs while it scrolls out — one scroll
+    // gesture each way. matchMedia rebuilds the timeline when the breakpoint
+    // changes so mobile/desktop scale values never go stale.
+    const aboutMM = gsap.matchMedia();
 
-    gsap.set(aboutFrame, {
-      scaleX: compactScaleX,
-      scaleY: compactScaleY,
-      borderRadius: compactRadius,
-      transformOrigin: '50% 50%'
-    });
-    gsap.set(aboutImage, { scale: 1.115, yPercent: -1.4 });
-    gsap.set(aboutCopy, { opacity: 0, y: 42 });
-    if (aboutHeader) gsap.set(aboutHeader, { opacity: .34 });
-    if (aboutFootnote) gsap.set(aboutFootnote, { opacity: 0, y: 10 });
-    if (aboutOverlay) gsap.set(aboutOverlay, { opacity: .96 });
+    aboutMM.add({
+      isMobile: '(max-width: 760px)',
+      isDesktop: '(min-width: 761px)'
+    }, context => {
+      const { isMobile } = context.conditions;
+      const compactScaleX = isMobile ? .92 : .80;
+      const compactScaleY = isMobile ? .84 : .72;
+      const compactRadius = isMobile ? 24 : 34;
+      const fullRadius = isMobile ? 12 : 8;
+      const hold = { progress: 0 };
 
-    const aboutTimeline = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: aboutPanel,
-        start: 'top 88%',
-        end: 'bottom 12%',
-        scrub: 1.05,
-        invalidateOnRefresh: true
-      }
-    });
-
-    // Open from the centre.
-    aboutTimeline
-      .to(aboutFrame, {
-        scaleX: 1,
-        scaleY: 1,
-        borderRadius: fullRadius,
-        duration: 1
-      }, 0)
-      .to(aboutImage, {
-        scale: 1.018,
-        yPercent: 0,
-        duration: 1.12
-      }, 0)
-      .to(aboutOverlay, {
-        opacity: .82,
-        duration: .9
-      }, .08)
-      .to(aboutHeader, {
-        opacity: 1,
-        duration: .46
-      }, .34)
-      .to(aboutCopy, {
-        opacity: 1,
-        y: 0,
-        duration: .58
-      }, .42)
-      .to(aboutFootnote, {
-        opacity: .72,
-        y: 0,
-        duration: .45
-      }, .58)
-
-      // Hold the full-frame chapter long enough to read it.
-      .to(hold, {
-        progress: 1,
-        duration: 1.18
-      }, 1.02)
-
-      // Leave the chapter: copy softens first, then the photograph folds
-      // visually back into the centre before Portfolio enters.
-      .to(aboutCopy, {
-        opacity: 0,
-        y: -30,
-        duration: .46
-      }, 2.18)
-      .to(aboutFootnote, {
-        opacity: 0,
-        y: -8,
-        duration: .34
-      }, 2.20)
-      .to(aboutHeader, {
-        opacity: .34,
-        duration: .45
-      }, 2.27)
-      .to(aboutOverlay, {
-        opacity: .96,
-        duration: .75
-      }, 2.34)
-      .to(aboutFrame, {
+      gsap.set(aboutFrame, {
         scaleX: compactScaleX,
         scaleY: compactScaleY,
         borderRadius: compactRadius,
-        duration: 1
-      }, 2.38)
-      .to(aboutImage, {
-        scale: 1.115,
-        yPercent: 1.4,
-        duration: 1
-      }, 2.38);
+        transformOrigin: '50% 50%'
+      });
+      gsap.set(aboutImage, { scale: 1.115, yPercent: -1.4 });
+      gsap.set(aboutCopy, { opacity: 0, y: 42 });
+      if (aboutHeader) gsap.set(aboutHeader, { opacity: .34 });
+      if (aboutFootnote) gsap.set(aboutFootnote, { opacity: 0, y: 10 });
+      if (aboutOverlay) gsap.set(aboutOverlay, { opacity: .96 });
+
+      const aboutTimeline = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: aboutPanel,
+          start: 'top 88%',
+          end: 'bottom 12%',
+          // Short catch-up only: Lenis already smooths the wheel, and a long
+          // scrub lag makes the chapter keep moving after the gesture ends.
+          scrub: .45,
+          invalidateOnRefresh: true
+        }
+      });
+
+      // Open from the centre.
+      aboutTimeline
+        .to(aboutFrame, { scaleX: 1, scaleY: 1, borderRadius: fullRadius, duration: 1 }, 0)
+        .to(aboutImage, { scale: 1.018, yPercent: 0, duration: 1.12 }, 0)
+        .to(aboutOverlay, { opacity: .82, duration: .9 }, .08)
+        .to(aboutHeader, { opacity: 1, duration: .46 }, .34)
+        .to(aboutCopy, { opacity: 1, y: 0, duration: .58 }, .42)
+        .to(aboutFootnote, { opacity: .72, y: 0, duration: .45 }, .58)
+
+        // Hold the full-frame chapter while the stage is pinned.
+        .to(hold, { progress: 1, duration: 1.18 }, 1.02)
+
+        // Leave the chapter: copy softens first, then the photograph folds
+        // visually back into the centre before Portfolio enters.
+        .to(aboutCopy, { opacity: 0, y: -30, duration: .46 }, 2.18)
+        .to(aboutFootnote, { opacity: 0, y: -8, duration: .34 }, 2.20)
+        .to(aboutHeader, { opacity: .34, duration: .45 }, 2.27)
+        .to(aboutOverlay, { opacity: .96, duration: .75 }, 2.34)
+        .to(aboutFrame, { scaleX: compactScaleX, scaleY: compactScaleY, borderRadius: compactRadius, duration: 1 }, 2.38)
+        .to(aboutImage, { scale: 1.115, yPercent: 1.4, duration: 1 }, 2.38);
+
+      return () => {
+        gsap.set([aboutFrame, aboutImage, aboutCopy, aboutHeader, aboutFootnote, aboutOverlay].filter(Boolean), { clearProps: 'all' });
+      };
+    });
   }
 
   // ---------- Portfolio cards ----------
@@ -377,4 +347,5 @@
   }
 
   window.addEventListener('load', () => ScrollTrigger.refresh());
+  document.fonts?.ready?.then(() => ScrollTrigger.refresh());
 })();

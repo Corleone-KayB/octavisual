@@ -2371,8 +2371,8 @@ body.team-profile-open { overflow: hidden; }
    ============================================================ */
 
 .about-panel {
-  height: 250svh;
-  min-height: 1500px;
+  height: 150svh;
+  min-height: 980px;
   padding: 0;
   overflow: visible;
   border: 0;
@@ -2573,7 +2573,7 @@ body.team-profile-open { overflow: hidden; }
 
 @media (max-width: 1180px) {
   .about-panel {
-    height: 240svh;
+    height: 146svh;
   }
 
   .about-cinematic-copy {
@@ -2587,8 +2587,8 @@ body.team-profile-open { overflow: hidden; }
 
 @media (max-width: 900px) {
   .about-panel {
-    height: 230svh;
-    min-height: 1320px;
+    height: 142svh;
+    min-height: 900px;
   }
 
   .about-scroll-stage {
@@ -2617,8 +2617,8 @@ body.team-profile-open { overflow: hidden; }
 
 @media (max-width: 760px) {
   .about-panel {
-    height: 220svh;
-    min-height: 1200px;
+    height: 136svh;
+    min-height: 840px;
     margin-bottom: 10px;
   }
 
@@ -2733,11 +2733,13 @@ body.team-profile-open { overflow: hidden; }
 
 /* ============================================================
    SHORTER / MORE RESPONSIVE SCROLL CHAPTER
+   Panel height - sticky stage height = pinned hold (~50svh).
+   Keep in sync with the About timeline in animations.js.
    ============================================================ */
 
 .about-panel {
-  height: 225svh;
-  min-height: 1360px;
+  height: 150svh;
+  min-height: 980px;
 }
 
 
@@ -2974,7 +2976,7 @@ body.team-profile-open { overflow: hidden; }
 
   .about-panel {
     height:
-      218svh;
+      146svh;
   }
 
 
@@ -3005,10 +3007,10 @@ body.team-profile-open { overflow: hidden; }
 
   .about-panel {
     height:
-      210svh;
+      142svh;
 
     min-height:
-      1260px;
+      900px;
   }
 
 
@@ -3069,10 +3071,10 @@ body.team-profile-open { overflow: hidden; }
 
   .about-panel {
     height:
-      205svh;
+      136svh;
 
     min-height:
-      1160px;
+      840px;
   }
 
 
