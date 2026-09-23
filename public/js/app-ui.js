@@ -327,59 +327,126 @@
   arrangeStack();
   startHeroAutoplay();
 
-  // ---------- Portfolio segmented filters ----------
-  const filterTabs = Array.from(document.querySelectorAll('.filter-tab'));
-  const filterIndicator = document.querySelector('.filter-indicator');
+  // ---------- Selected Work: Film / Photography tabs + category filters ----------
+  // Every card is server-rendered once. Filtering moves the matching cards into
+  // the grid (and the rest out of it) so the photography grid's nth-child
+  // asymmetry always applies to what is visible. Interactions use delegation,
+  // so re-inserted cards keep their cursor, lightbox and hover behaviour.
   const gallery = document.getElementById('galleryGrid');
-  const projectCards = gallery ? Array.from(gallery.querySelectorAll('.project-card')) : [];
+  const workPanel = gallery?.closest('.work-panel');
+  const workCount = document.getElementById('workCount');
+  const workEmpty = document.getElementById('workEmpty');
+  const allCards = gallery ? Array.from(gallery.querySelectorAll('.project-card')) : [];
+  const workState = {
+    media: gallery?.dataset.media || 'film',
+    category: 'all'
+  };
 
-  function positionFilterIndicator(activeButton) {
-    if (!filterIndicator || !activeButton) return;
-    filterIndicator.style.left = `${activeButton.offsetLeft}px`;
-    filterIndicator.style.width = `${activeButton.offsetWidth}px`;
+  function positionFilterIndicator(group) {
+    if (!group || group.hidden) return;
+    const indicator = group.querySelector('.filter-indicator');
+    const active = group.querySelector('.filter-tab.is-active');
+    if (!indicator || !active) return;
+    indicator.style.left = `${active.offsetLeft}px`;
+    indicator.style.width = `${active.offsetWidth}px`;
   }
 
-  function filterProjects(filter) {
-    if (!gallery) return;
-    gallery.classList.toggle('is-filtered', filter !== 'all');
+  function setActiveButton(group, button) {
+    group.querySelectorAll('.filter-tab').forEach(tab => {
+      const active = tab === button;
+      tab.classList.toggle('is-active', active);
+      tab.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    positionFilterIndicator(group);
+  }
 
-    if (window.gsap && !reducedMotion) {
-      gsap.to(projectCards, {
-        opacity: 0,
-        scale: 0.985,
-        duration: 0.22,
-        stagger: 0.015,
-        ease: 'power2.in',
-        onComplete: () => {
-          projectCards.forEach(card => {
-            const visible = filter === 'all' || card.dataset.type === filter;
-            card.classList.toggle('is-hidden', !visible);
-          });
-          const visibleCards = projectCards.filter(card => !card.classList.contains('is-hidden'));
-          gsap.set(visibleCards, { opacity: 0, y: 20, scale: 0.985 });
-          gsap.to(visibleCards, { opacity: 1, y: 0, scale: 1, duration: 0.55, stagger: 0.045, ease: 'power3.out' });
-        }
-      });
-    } else {
-      projectCards.forEach(card => {
-        const visible = filter === 'all' || card.dataset.type === filter;
-        card.classList.toggle('is-hidden', !visible);
-      });
+  function matchingCards() {
+    return allCards.filter(card => card.dataset.media === workState.media
+      && (workState.category === 'all' || card.dataset.categories.split(' ').includes(workState.category)));
+  }
+
+  function renderCards(cards) {
+    cards.forEach((card, index) => {
+      const label = card.querySelector('.project-index');
+      if (label) label.textContent = String(index + 1).padStart(2, '0');
+    });
+    gallery.dataset.media = workState.media;
+    gallery.replaceChildren(...cards);
+    if (workEmpty) workEmpty.hidden = cards.length > 0;
+    if (workCount) {
+      const total = allCards.filter(card => card.dataset.media === workState.media).length;
+      workCount.textContent = `${total} ${total === 1 ? 'project' : 'projects'}`;
     }
   }
 
-  filterTabs.forEach(button => {
-    button.addEventListener('click', () => {
-      filterTabs.forEach(tab => tab.classList.remove('is-active'));
-      button.classList.add('is-active');
-      positionFilterIndicator(button);
-      filterProjects(button.dataset.filter);
+  // animations.js listens for this to re-batch entrances and refresh
+  // ScrollTrigger positions for the sections below (Team, Contact).
+  function announceRender(cards) {
+    document.dispatchEvent(new CustomEvent('octavisual:work-rendered', { detail: { cards } }));
+    if (reducedMotion) window.ScrollTrigger?.refresh();
+  }
+
+  function applyWorkFilter({ animate = true } = {}) {
+    if (!gallery) return;
+    const next = matchingCards();
+
+    if (!animate || !window.gsap || reducedMotion) {
+      renderCards(next);
+      announceRender(next);
+      return;
+    }
+
+    const current = Array.from(gallery.children);
+    gsap.killTweensOf(allCards);
+    gsap.to(current, {
+      opacity: 0,
+      scale: 0.985,
+      duration: 0.2,
+      stagger: 0.012,
+      ease: 'power2.in',
+      onComplete: () => {
+        gsap.set(current, { clearProps: 'opacity,transform' });
+        renderCards(next);
+        announceRender(next);
+      }
+    });
+  }
+
+  const mediaGroup = workPanel?.querySelector('[data-filter-group="media"]');
+  const categoryGroups = workPanel ? Array.from(workPanel.querySelectorAll('[data-filter-group="category"]')) : [];
+
+  mediaGroup?.addEventListener('click', event => {
+    const button = event.target.closest('.filter-tab[data-media]');
+    if (!button || button.dataset.media === workState.media) return;
+    setActiveButton(mediaGroup, button);
+    workState.media = button.dataset.media;
+    workState.category = 'all';
+    categoryGroups.forEach(group => {
+      group.hidden = group.dataset.forMedia !== workState.media;
+      const all = group.querySelector('[data-category="all"]');
+      if (all) setActiveButton(group, all);
+    });
+    applyWorkFilter();
+  });
+
+  categoryGroups.forEach(group => {
+    group.addEventListener('click', event => {
+      const button = event.target.closest('.filter-tab[data-category]');
+      if (!button || button.dataset.category === workState.category) return;
+      setActiveButton(group, button);
+      workState.category = button.dataset.category;
+      applyWorkFilter();
     });
   });
 
-  const initialFilter = document.querySelector('.filter-tab.is-active');
-  requestAnimationFrame(() => positionFilterIndicator(initialFilter));
-  window.addEventListener('resize', () => positionFilterIndicator(document.querySelector('.filter-tab.is-active')));
+  function positionAllIndicators() {
+    [mediaGroup, ...categoryGroups].forEach(positionFilterIndicator);
+  }
+
+  applyWorkFilter({ animate: false });
+  requestAnimationFrame(positionAllIndicators);
+  document.fonts?.ready?.then(positionAllIndicators);
+  window.addEventListener('resize', positionAllIndicators);
 
   // ---------- Team profile expansion ----------
   const teamProfile = document.getElementById('teamProfile');
@@ -523,44 +590,105 @@
 
 
 
-  // ---------- Photography lightbox ----------
+  // ---------- Lightbox: photography images + YouTube films ----------
+  // The YouTube iframe is only created when a film is opened and is removed on
+  // close, which stops playback and keeps the page free of embeds until needed.
   const lightbox = document.getElementById('lightbox');
+  const lightboxFigure = lightbox?.querySelector('figure');
   const lightboxImage = document.getElementById('lightboxImage');
+  const lightboxVideo = document.getElementById('lightboxVideo');
   const lightboxCaption = document.getElementById('lightboxCaption');
-  const lightboxClose = document.querySelector('.lightbox-close');
+  const lightboxClose = lightbox?.querySelector('.lightbox-close');
+  const youtubeIdPattern = /^[A-Za-z0-9_-]{11}$/;
+  let lightboxReturnFocus = null;
 
-  function openLightbox(src, title) {
-    if (!lightbox || !lightboxImage) return;
-    lightboxImage.src = src;
-    lightboxImage.alt = title || 'Octavisual image preview';
+  function showLightbox(title, mode) {
+    lightbox.classList.toggle('is-video', mode === 'video');
+    lightbox.setAttribute('aria-label', title ? `${mode === 'video' ? 'Film' : 'Image'}: ${title}` : 'Media preview');
     if (lightboxCaption) lightboxCaption.textContent = title || '';
+    lightboxReturnFocus = document.activeElement;
     lightbox.classList.add('is-open');
     lightbox.setAttribute('aria-hidden', 'false');
     document.body.classList.add('lightbox-open');
+    window.__octaLenis?.stop?.();
     if (window.gsap && !reducedMotion) {
       gsap.fromTo(lightbox, { opacity: 0 }, { opacity: 1, duration: .35, ease: 'power2.out' });
-      gsap.fromTo(lightbox.querySelector('figure'), { opacity: 0, scale: .97 }, { opacity: 1, scale: 1, duration: .55, ease: 'power3.out' });
+      gsap.fromTo(lightboxFigure, { opacity: 0, scale: .97 }, { opacity: 1, scale: 1, duration: .55, ease: 'power3.out' });
     } else {
       lightbox.style.opacity = '1';
     }
+    lightboxClose?.focus({ preventScroll: true });
+  }
+
+  function openImageLightbox(src, title, alt) {
+    if (!lightbox || !lightboxImage || !src) return;
+    if (lightboxVideo) {
+      lightboxVideo.replaceChildren();
+      lightboxVideo.hidden = true;
+    }
+    lightboxImage.hidden = false;
+    lightboxImage.src = src;
+    lightboxImage.alt = alt || title || 'Octavisual image preview';
+    showLightbox(title, 'image');
+  }
+
+  function openVideoLightbox(youtubeId, title) {
+    if (!lightbox || !lightboxVideo || !youtubeIdPattern.test(youtubeId || '')) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+    iframe.title = title || 'Octavisual film';
+    iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    if (lightboxImage) {
+      lightboxImage.hidden = true;
+      lightboxImage.removeAttribute('src');
+    }
+    lightboxVideo.replaceChildren(iframe);
+    lightboxVideo.hidden = false;
+    showLightbox(title, 'video');
   }
 
   function closeLightbox() {
-    if (!lightbox) return;
+    if (!lightbox?.classList.contains('is-open')) return;
     const finish = () => {
-      lightbox.classList.remove('is-open');
+      lightbox.classList.remove('is-open', 'is-video');
       lightbox.setAttribute('aria-hidden', 'true');
       lightbox.style.opacity = '';
       document.body.classList.remove('lightbox-open');
+      window.__octaLenis?.start?.();
+      lightboxReturnFocus?.focus?.({ preventScroll: true });
+      lightboxReturnFocus = null;
     };
+    // Remove the iframe immediately so audio stops even during the fade.
+    if (lightboxVideo) {
+      lightboxVideo.replaceChildren();
+      lightboxVideo.hidden = true;
+    }
     if (window.gsap && !reducedMotion) gsap.to(lightbox, { opacity: 0, duration: .25, onComplete: finish });
     else finish();
   }
 
-  document.querySelectorAll('.lightbox-trigger').forEach(trigger => {
-    trigger.addEventListener('click', () => openLightbox(trigger.dataset.image, trigger.dataset.title));
+  document.addEventListener('click', event => {
+    const imageTrigger = event.target.closest('.lightbox-trigger');
+    if (imageTrigger) {
+      openImageLightbox(imageTrigger.dataset.image, imageTrigger.dataset.title, imageTrigger.dataset.alt);
+      return;
+    }
+    const videoTrigger = event.target.closest('.video-trigger');
+    if (videoTrigger) openVideoLightbox(videoTrigger.dataset.youtubeId, videoTrigger.dataset.title);
   });
+
   lightboxClose?.addEventListener('click', closeLightbox);
   lightbox?.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape' && lightbox?.classList.contains('is-open')) closeLightbox(); });
+  document.addEventListener('keydown', event => {
+    if (!lightbox?.classList.contains('is-open')) return;
+    if (event.key === 'Escape') {
+      closeLightbox();
+    } else if (event.key === 'Tab' && !lightbox.classList.contains('is-video')) {
+      // The close button is the only focusable control in image mode.
+      event.preventDefault();
+      lightboxClose?.focus();
+    }
+  });
 })();

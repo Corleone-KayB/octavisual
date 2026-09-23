@@ -149,18 +149,24 @@
   }
 
   // ---------- Portfolio cards ----------
-  ScrollTrigger.batch('.project-card', {
-    start: 'top 90%',
-    once: true,
-    onEnter: batch => gsap.from(batch, {
-      y: 26,
-      opacity: 0,
-      scale: .99,
-      stagger: .07,
-      duration: .75,
-      ease: 'power3.out',
-      overwrite: true
-    })
+  // Cards are re-rendered by the Selected Work filters (app-ui.js), which
+  // announce each render so the entrance batch always targets what is shown.
+  let cardTriggers = [];
+  function batchProjectCards(cards) {
+    cardTriggers.forEach(trigger => trigger.kill());
+    cardTriggers = cards.length ? ScrollTrigger.batch(cards, {
+      start: 'top 90%',
+      once: true,
+      onEnter: batch => gsap.fromTo(batch,
+        { y: 26, opacity: 0, scale: .99 },
+        { y: 0, opacity: 1, scale: 1, stagger: .07, duration: .75, ease: 'power3.out', overwrite: true, clearProps: 'transform' }
+      )
+    }) : [];
+  }
+  batchProjectCards(gsap.utils.toArray('#galleryGrid .project-card'));
+  document.addEventListener('octavisual:work-rendered', event => {
+    batchProjectCards(event.detail.cards);
+    ScrollTrigger.refresh();
   });
 
   // ---------- Team kinetic scroll choreography ----------
@@ -334,15 +340,15 @@
 
     document.documentElement.addEventListener('mouseleave', () => cursor.classList.remove('is-visible'));
 
-    document.querySelectorAll('[data-cursor-text]').forEach(element => {
-      element.addEventListener('mouseenter', () => {
-        cursor.classList.add('is-expanded');
-        if (label) label.textContent = element.dataset.cursorText || 'VIEW';
-      });
-      element.addEventListener('mouseleave', () => {
-        cursor.classList.remove('is-expanded');
-        if (label) label.textContent = '';
-      });
+    // Delegated so cards re-rendered by the Selected Work filters keep their
+    // contextual cursor state.
+    let cursorTarget = null;
+    document.addEventListener('pointerover', event => {
+      const target = event.target.closest?.('[data-cursor-text]') || null;
+      if (target === cursorTarget) return;
+      cursorTarget = target;
+      cursor.classList.toggle('is-expanded', Boolean(target));
+      if (label) label.textContent = target ? (target.dataset.cursorText || 'VIEW') : '';
     });
   }
 

@@ -1,43 +1,95 @@
-<% const f = section.fields;
-   const items = work.film.concat(work.photography).sort(function(a, b) { return a.order - b.order; }); %>
+<%
+  const f = section.fields;
+  const tabs = [
+    { key: 'film', label: 'Film', items: work.film, filters: work.filters.film },
+    { key: 'photography', label: 'Photography', items: work.photography, filters: work.filters.photography }
+  ].filter(function(tab) { return tab.items.length; });
+  const initialTab = tabs.length ? tabs[0] : null;
+%>
 <section id="<%= section.anchor %>" class="workspace-panel work-panel" data-nav-section="<%= section.anchor %>">
   <div class="panel-header panel-header--work">
     <span class="panel-number"><%= section.number %></span>
     <span class="panel-title"><%= section.title %></span>
-    <span class="panel-meta"><%= items.length %> projects</span>
+    <span class="panel-meta" id="workCount" aria-live="polite"><%= initialTab ? initialTab.items.length : 0 %> projects</span>
   </div>
 
   <div class="work-toolbar">
     <p class="work-intro"><%= f.intro %></p>
-    <div class="filter-tabs" role="group" aria-label="Filter portfolio">
-      <button class="filter-tab is-active" data-filter="all">All</button>
-      <button class="filter-tab" data-filter="video">Film</button>
-      <button class="filter-tab" data-filter="picture">Photography</button>
-      <span class="filter-indicator" aria-hidden="true"></span>
-    </div>
+    <% if (tabs.length > 1) { %>
+      <div class="filter-tabs work-media-tabs" role="group" aria-label="Choose film or photography" data-filter-group="media">
+        <% tabs.forEach(function(tab, index) { %>
+          <button class="filter-tab <%= index === 0 ? 'is-active' : '' %>" type="button" data-media="<%= tab.key %>" aria-pressed="<%= index === 0 ? 'true' : 'false' %>" aria-controls="galleryGrid"><%= tab.label %></button>
+        <% }); %>
+        <span class="filter-indicator" aria-hidden="true"></span>
+      </div>
+    <% } %>
   </div>
 
-  <div class="gallery-grid" id="galleryGrid">
-    <% items.forEach(function(item, index) { const isFilm = item.mediaType === 'film'; %>
-      <article class="project-card project-card--<%= (index % 5) + 1 %>" data-type="<%= isFilm ? 'video' : 'picture' %>">
-        <div class="project-media" data-cursor-text="<%= isFilm ? (item.youtubeId ? 'PLAY' : 'SOON') : 'VIEW' %>">
-          <img src="<%= item.thumb.src %>" alt="<%= item.alt || item.title %>" loading="lazy">
+  <% if (tabs.some(function(tab) { return tab.filters.length > 1; })) { %>
+    <div class="work-subfilters">
+      <% tabs.forEach(function(tab, index) { if (tab.filters.length < 2) return; %>
+        <div class="filter-tabs filter-tabs--sub" role="group" aria-label="<%= tab.label %> categories" data-filter-group="category" data-for-media="<%= tab.key %>" <% if (index !== 0) { %>hidden<% } %>>
+          <button class="filter-tab is-active" type="button" data-category="all" aria-pressed="true" aria-controls="galleryGrid">All</button>
+          <% tab.filters.forEach(function(category) { %>
+            <button class="filter-tab" type="button" data-category="<%= category.slug %>" aria-pressed="false" aria-controls="galleryGrid"><%= category.name %></button>
+          <% }); %>
+          <span class="filter-indicator" aria-hidden="true"></span>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+
+  <div class="gallery-grid" id="galleryGrid" data-media="<%= initialTab ? initialTab.key : '' %>">
+    <% work.film.forEach(function(item, index) { %>
+      <article class="project-card project-card--film <%= item.featured ? 'is-featured' : '' %>" data-media="film" data-categories="<%= item.categorySlugs.join(' ') %>">
+        <div class="project-media" data-cursor-text="<%= item.youtubeId ? 'PLAY' : 'SOON' %>">
+          <% if (item.thumb.src) { %>
+            <img
+              src="<%= item.thumb.src %>"
+              <% if (item.thumb.srcset) { %>srcset="<%= item.thumb.srcset %>" sizes="(max-width: 900px) 100vw, 50vw"<% } %>
+              alt=""
+              loading="lazy"
+              decoding="async"
+            >
+          <% } %>
           <div class="project-shade"></div>
-          <% if (isFilm && item.youtubeId) { %>
-            <a class="project-hit" href="https://www.youtube.com/watch?v=<%= item.youtubeId %>" target="_blank" rel="noopener" aria-label="Watch <%= item.title %>"></a>
-          <% } else if (!isFilm) { %>
-            <button class="project-hit lightbox-trigger" type="button" data-image="<%= item.full %>" data-title="<%= item.title %>" aria-label="View <%= item.title %>"></button>
+          <% if (item.youtubeId) { %>
+            <button class="project-hit video-trigger" type="button" data-youtube-id="<%= item.youtubeId %>" data-title="<%= item.title %>" aria-label="Play <%= item.title %>"></button>
           <% } else { %>
-            <button class="project-hit project-hit--disabled" type="button" aria-label="Video preview coming soon"></button>
+            <button class="project-hit project-hit--disabled" type="button" aria-label="<%= item.title %>: video coming soon" disabled></button>
           <% } %>
           <span class="project-index"><%= String(index + 1).padStart(2, '0') %></span>
-          <span class="project-icon"><%= isFilm ? '▶' : '↗' %></span>
+          <span class="project-icon" aria-hidden="true">▶</span>
         </div>
         <div class="project-info">
           <h3><%= item.title %></h3>
-          <p><%= item.categoryNames.join(', ') %> · <%= item.year %></p>
+          <p><%= [item.categoryNames.join(', '), item.year].filter(Boolean).join(' · ') %></p>
+        </div>
+      </article>
+    <% }); %>
+
+    <% work.photography.forEach(function(item, index) { %>
+      <article class="project-card project-card--photo <%= item.featured ? 'is-featured' : '' %>" data-media="photography" data-categories="<%= item.categorySlugs.join(' ') %>">
+        <div class="project-media" data-cursor-text="VIEW">
+          <img
+            src="<%= item.thumb.src %>"
+            <% if (item.thumb.srcset) { %>srcset="<%= item.thumb.srcset %>" sizes="(max-width: 900px) 100vw, 60vw"<% } %>
+            alt="<%= item.alt %>"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="project-shade"></div>
+          <button class="project-hit lightbox-trigger" type="button" data-image="<%= item.full %>" data-title="<%= item.title %>" data-alt="<%= item.alt %>" aria-label="View <%= item.title %>"></button>
+          <span class="project-index"><%= String(index + 1).padStart(2, '0') %></span>
+          <span class="project-icon" aria-hidden="true">↗</span>
+        </div>
+        <div class="project-info">
+          <h3><%= item.title %></h3>
+          <p><%= [item.categoryNames.join(', '), item.year].filter(Boolean).join(' · ') %></p>
         </div>
       </article>
     <% }); %>
   </div>
+
+  <p class="work-empty" id="workEmpty" hidden>Nothing here yet — check back soon.</p>
 </section>

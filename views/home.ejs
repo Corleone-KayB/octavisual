@@ -27,9 +27,13 @@
     </main>
   </div>
 
-  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Image preview">
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Media preview">
     <button class="lightbox-close" type="button" aria-label="Close preview">×</button>
-    <figure><img id="lightboxImage" alt=""><figcaption id="lightboxCaption"></figcaption></figure>
+    <figure>
+      <img id="lightboxImage" alt="">
+      <div class="lightbox-video" id="lightboxVideo" hidden></div>
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
